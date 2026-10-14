@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nancy Singh</title>
+<meta name="description" content="Nancy Singh builds tools that catch quiet failures: flaky browser tests and LLMs that make things up.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;800&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap">
+<style>
+/* Layout: monochrome chrome. A dithered halftone sky with sharp four-point sigils behind everything, black glass panels, liquid-metal 3D hero. One committed dark look. */
+:root {
+  --black: #050505;
+  --ink: #0d0d0d;
+  --panel: rgba(6, 6, 6, .78);
+  --edge: rgba(255, 255, 255, .14);
+  --fg: #f2f2f2;
+  --muted: #9a9a9a;
+  --chrome: linear-gradient(180deg, #ffffff 0%, #d9d9d9 28%, #6e6e6e 48%, #f4f4f4 62%, #9c9c9c 82%, #ffffff 100%);
+  --display: "Unbounded", "Manrope", system-ui, sans-serif;
+  --body: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  --jp: "Zen Kaku Gothic New", "Manrope", sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--black); color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.65; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+:focus-visible { outline: 1px solid #fff; outline-offset: 4px; border-radius: 4px; }
+code { font-family: var(--mono); font-size: .86em; color: #fff; border: 1px solid var(--edge); padding: .02em .35em; border-radius: 4px; }
+.wrap { max-width: 1140px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.chrome-text { background: var(--chrome); background-size: 100% 220%; -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* ---------- halftone backdrop ---------- */
+#halftone { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; display: block; background: var(--black); }
+
+/* ---------- panels ---------- */
+.panel { background: var(--panel); border: 1px solid var(--edge); border-radius: 18px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: relative; }
+.panel.chromed::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(140deg, rgba(255,255,255,.9), rgba(255,255,255,.05) 30%, rgba(255,255,255,.05) 70%, rgba(255,255,255,.7));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+.btn { font: 600 14px var(--body); text-decoration: none; color: var(--fg); padding: 11px 18px; border-radius: 999px; border: 1px solid var(--edge); background: rgba(255,255,255,.04); display: inline-flex; gap: 8px; align-items: center; cursor: pointer; transition: transform .2s ease, background .2s ease, border-color .2s ease; }
+.btn:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.5); background: rgba(255,255,255,.08); }
+.btn.lead { color: #050505; border: 0; background: var(--chrome); background-size: 100% 200%; box-shadow: 0 0 0 1px rgba(255,255,255,.4), 0 10px 30px -12px rgba(255,255,255,.5); transition: background-position .5s ease, transform .2s ease; }
+.btn.lead:hover { background-position: 0 100%; }
+
+/* ---------- top bar ---------- */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; padding-block: 12px; }
+.bar .inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px 10px 18px; border-radius: 999px; }
+.mark { font: 500 15px var(--display); text-decoration: none; letter-spacing: .04em; display: inline-flex; align-items: center; gap: 10px; }
+.mark svg { width: 16px; height: 16px; }
+.nav { display: flex; gap: 2px; }
+.nav a { font: 400 12.5px var(--mono); text-decoration: none; padding: 6px 12px; border-radius: 999px; color: var(--muted); letter-spacing: .04em; }
+.nav a:hover { color: var(--fg); background: rgba(255,255,255,.07); }
+
+/* ---------- hero ---------- */
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 20px; align-items: center; padding-block: 36px 52px; position: relative; }
+.hero .copy { padding: clamp(22px, 3.4vw, 40px); }
+.kicker { font: 400 12px var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); display: inline-flex; gap: 12px; align-items: center; }
+.kicker svg { width: 12px; height: 12px; }
+h1 { font-family: var(--display); font-weight: 800; font-size: clamp(42px, 6.6vw, 84px); line-height: .96; letter-spacing: -.04em; margin: 18px 0 18px; text-wrap: balance; animation: sheen 7s ease-in-out infinite alternate; }
+@keyframes sheen { from { background-position: 0 0; } to { background-position: 0 100%; } }
+.role { font: 500 clamp(18px, 2.1vw, 23px)/1.35 var(--body); margin: 0 0 14px; }
+.role em { font-style: normal; border-bottom: 1px solid #fff; }
+.lede { color: var(--muted); max-width: 33em; margin: 0 0 26px; }
+.lede b { color: var(--fg); font-weight: 700; }
+.cta { display: flex; flex-wrap: wrap; gap: 10px; }
+.vert { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); top: 36px; writing-mode: vertical-rl; font: 400 12.5px var(--jp); letter-spacing: .45em; color: rgba(255,255,255,.55); mix-blend-mode: difference; }
+
+.stage { position: relative; aspect-ratio: 1 / 1; width: 100%; max-width: 100%; }
+#metal { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hud { position: absolute; left: 5%; bottom: 5%; display: flex; gap: 14px; align-items: center; padding: 9px 14px; border-radius: 999px; font: 400 12px var(--mono); color: var(--muted); }
+.hud b { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+.pill { padding: 1px 10px; border-radius: 999px; font-weight: 600; letter-spacing: .08em; border: 1px solid rgba(255,255,255,.4); }
+.pill.idle { background: #fff; color: #050505; border-color: #fff; }
+
+/* ---------- ticker ---------- */
+.ticker { overflow: hidden; border-block: 1px solid var(--edge); background: rgba(5,5,5,.85); }
+.ticker .track { display: flex; gap: 46px; white-space: nowrap; padding-block: 11px; font: 400 12.5px var(--mono); color: #cfcfcf; animation: tick 50s linear infinite; width: max-content; letter-spacing: .04em; }
+.ticker .track span { display: inline-flex; gap: 14px; align-items: center; }
+.ticker .track svg { width: 11px; height: 11px; }
+@keyframes tick { to { transform: translateX(-50%); } }
+
+/* ---------- sections ---------- */
+section { padding-block: 64px; }
+.sec-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 24px; }
+h2 { font-family: var(--display); font-weight: 500; font-size: clamp(28px, 3.8vw, 44px); letter-spacing: -.035em; line-height: 1.05; margin: 0; text-wrap: balance; }
+h2 small { display: block; font: 400 12.5px var(--jp); letter-spacing: .4em; color: var(--muted); margin-bottom: 10px; }
+.sec-head h2 { padding: 14px 20px; }
+.sec-head p { margin: 0; max-width: 30em; color: var(--muted); padding: 14px 18px; }
+
+/* ---------- project windows ---------- */
+.work { display: grid; gap: 22px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.win { min-width: 0; display: flex; flex-direction: column; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.2,.8,.2,1); will-change: transform; overflow: hidden; }
+.win .glare { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s; background: radial-gradient(360px circle at var(--gx,50%) var(--gy,0%), rgba(255,255,255,.12), transparent 60%); }
+.win:hover .glare { opacity: 1; }
+.titlebar { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--edge); font: 400 12px var(--mono); color: var(--muted); }
+.titlebar svg { width: 12px; height: 12px; }
+.win .body { padding: 20px 20px 18px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+.win .top { display: flex; align-items: center; gap: 14px; }
+.icon { width: 54px; height: 54px; flex: none; border-radius: 14px; display: grid; place-items: center; background: radial-gradient(circle at 30% 22%, #ffffff 0%, #9a9a9a 30%, #2a2a2a 62%, #0a0a0a 100%); box-shadow: inset 0 0 0 1px rgba(255,255,255,.35); transition: transform .6s cubic-bezier(.2,.8,.2,1); }
+.icon svg { width: 28px; height: 28px; }
+.win:hover .icon { transform: translateZ(40px) rotate(-4deg); }
+.win h3 { font: 500 24px/1.05 var(--display); letter-spacing: -.035em; margin: 0; }
+.kind { font: 400 12px var(--mono); color: var(--muted); margin-top: 6px; }
+.win p { margin: 0; color: var(--muted); font-size: 15px; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stat { border: 1px solid var(--edge); border-radius: 12px; padding: 9px 11px; background: rgba(255,255,255,.025); transition: transform .6s cubic-bezier(.2,.8,.2,1); }
+.win:hover .stat { transform: translateZ(22px); }
+.stat .n { font: 800 22px/1.15 var(--display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.stat .n.fail { color: transparent; -webkit-text-stroke: 1px #fff; }
+.stat .l { font-size: 12px; color: var(--muted); line-height: 1.35; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips span { font: 400 11.5px var(--mono); color: #c9c9c9; border: 1px solid var(--edge); border-radius: 999px; padding: 2px 9px; }
+.links { margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px; }
+.links .btn { font-size: 13px; padding: 8px 14px; }
+.soon { font: 400 12px var(--mono); color: var(--muted); align-self: center; }
+
+/* ---------- insight ---------- */
+.insight { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; align-items: stretch; }
+.insight .txt { padding: 26px 26px 10px; }
+.insight .txt p { color: var(--muted); }
+.insight .txt b { color: var(--fg); }
+.term { min-width: 0; overflow: hidden; display: flex; flex-direction: column; }
+.term pre { margin: 0; padding: 18px 20px; overflow-x: auto; font: 400 13.5px/1.75 var(--mono); color: #d6d6d6; flex: 1; }
+.term .c { color: #6e6e6e; } .term .k { color: #ffffff; font-weight: 600; } .term .s { color: #bdbdbd; } .term .x { color: #050505; background: #fff; padding: 0 3px; }
+
+/* ---------- about ---------- */
+.about { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.card { padding: 16px 18px; min-width: 0; }
+.card .k { font: 400 11.5px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.card .v { margin-top: 6px; font-weight: 700; }
+.card .v span { font-weight: 500; color: var(--muted); }
+
+/* ---------- contact ---------- */
+.contact .box { padding: clamp(24px, 4vw, 46px); }
+.contact h2 { font-size: clamp(28px, 4.4vw, 52px); }
+.reach { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; align-items: center; }
+.email { font: 400 14px var(--mono); border: 1px solid var(--edge); border-radius: 999px; padding: 10px 16px; user-select: all; background: rgba(255,255,255,.04); }
+footer { background: #050505; border-top: 1px solid var(--edge); }
+footer .wrap { padding-block: 22px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; font: 400 12px var(--mono); color: var(--muted); }
+
+@media (max-width: 920px) {
+  .hero .wrap { grid-template-columns: 1fr; padding-block: 24px 36px; }
+  .stage { max-width: 480px; margin: 0 auto; }
+  .work, .insight, .about { grid-template-columns: 1fr; }
+  .vert { display: none; }
+}
+@media (max-width: 560px) { .nav { display: none; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="sigil" viewBox="0 0 100 100"><path d="M50 0 C53 38 62 47 100 50 C62 53 53 62 50 100 C47 62 38 53 0 50 C38 47 47 38 50 0 Z"/></symbol>
+  </defs>
+</svg>
+
+<canvas id="halftone" aria-hidden="true"></canvas>
+
+<header class="bar">
+  <div class="wrap">
+    <div class="inner panel">
+      <a class="mark" href="#top"><svg fill="#fff" aria-hidden="true"><use href="#sigil"/></svg>nancy singh</a>
+      <nav class="nav" aria-label="Sections">
+        <a href="#work">work</a><a href="#insight">insight</a><a href="#about">about</a><a href="#contact">contact</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="wrap">
+      <div class="vert" lang="ja">静かな失敗を見つける</div>
+      <div class="copy panel chromed">
+        <div class="kicker"><svg fill="#fff" aria-hidden="true"><use href="#sigil"/></svg>software &amp; AI reliability</div>
+        <h1 class="chrome-text">Nancy Singh</h1>
+        <p class="role">I build tools that catch <em>quiet failures</em>.</p>
+        <p class="lede">The bugs I care about don't crash. They're the <b>test that passes 80% of the time</b> and the <b>RAG answer that sounds right but isn't in the source</b>. I find them, measure them, and ship the fix.</p>
+        <div class="cta">
+          <a class="btn lead" href="#work">See the work</a>
+          <a class="btn" href="https://github.com/nancy6547" target="_blank" rel="noopener">GitHub ↗</a>
+          <a class="btn" href="https://linkedin.com/in/nancy-singh-84367722a" target="_blank" rel="noopener">LinkedIn ↗</a>
+        </div>
+      </div>
+      <div class="stage" aria-label="A liquid-metal sculpture with a chrome four-point star orbiting it. Small chrome beads are network requests; when none are in flight and the network has been quiet for 500 ms, it turns idle.">
+        <canvas id="metal"></canvas>
+        <div class="hud panel">
+          <span>in flight <b id="inflight">0</b></span>
+          <span>quiet <b id="quiet">0</b>ms</span>
+          <span class="pill" id="state">BUSY</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="track" id="track"></div>
+  </div>
+
+  <section id="work">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="panel"><small lang="ja">作品</small>Selected work</h2>
+        <p class="panel">Three projects, one theme: making software tell the truth about whether it works.</p>
+      </div>
+      <div class="work">
+
+        <article class="win panel chromed" data-tilt>
+          <div class="glare"></div>
+          <div class="titlebar"><span>~/zeitaku</span><svg fill="#fff" aria-hidden="true"><use href="#sigil"/></svg></div>
+          <div class="body">
+            <div class="top">
+              <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12M6 21h12M7 3c0 5 10 5 10 9s-10 4-10 9M17 3c0 5-10 5-10 9"/></svg></div>
+              <div><h3>Zeitaku</h3><div class="kind">TypeScript · testing</div></div>
+            </div>
+            <p>Finds hard-coded <code>waitForTimeout</code> sleeps in Playwright tests through the TypeScript AST, and swaps them for waits that watch the real network over the Chrome DevTools Protocol.</p>
+            <div class="stats">
+              <div class="stat"><div class="n fail">100%</div><div class="l">fixed sleeps failed on Slow 3G</div></div>
+              <div class="stat"><div class="n chrome-text">0%</div><div class="l">Zeitaku failures, same test</div></div>
+              <div class="stat"><div class="n chrome-text">240</div><div class="l">sleeps found in 7 OSS repos</div></div>
+              <div class="stat"><div class="n chrome-text">44</div><div class="l">intentional ones it leaves alone</div></div>
+            </div>
+            <div class="chips"><span>TS Compiler API</span><span>CDP</span><span>Playwright</span><span>Vitest + CI</span></div>
+            <div class="links">
+              <a class="btn lead" href="https://github.com/nancy6547/zeitaku" target="_blank" rel="noopener">Code ↗</a>
+              <a class="btn" href="https://github.com/documenso/documenso/issues/3445" target="_blank" rel="noopener">Documenso issue ↗</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="win panel chromed" data-tilt>
+          <div class="glare"></div>
+          <div class="titlebar"><span>~/halluguard</span><svg fill="#fff" aria-hidden="true"><use href="#sigil"/></svg></div>
+          <div class="body">
+            <div class="top">
+              <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+              <div><h3>HalluGuard</h3><div class="kind">Python · LLM evaluation</div></div>
+            </div>
+            <p>Flags RAG answers that aren't supported by their sources. Started with cosine similarity, hit its limits, and moved to an NLI cross-encoder that checks whether each answer is actually entailed by its sources.</p>
+            <div class="stats">
+              <div class="stat"><div class="n chrome-text">NLI</div><div class="l">DeBERTa-v3 cross-encoder</div></div>
+              <div class="stat"><div class="n chrome-text">RAGTruth</div><div class="l">benchmark dataset</div></div>
+            </div>
+            <div class="chips"><span>PyTorch</span><span>Hugging Face</span><span>NLI</span></div>
+            <div class="links"><span class="soon">Write-up and repo coming soon</span></div>
+          </div>
+        </article>
+
+        <article class="win panel chromed" data-tilt>
+          <div class="glare"></div>
+          <div class="titlebar"><span>~/docmind</span><svg fill="#fff" aria-hidden="true"><use href="#sigil"/></svg></div>
+          <div class="body">
+            <div class="top">
+              <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><circle cx="11.5" cy="14" r="2.5"/><path d="M13.5 16l2 2"/></svg></div>
+              <div><h3>DocMind</h3><div class="kind">Python · RAG</div></div>
+            </div>
+            <p>Ask questions about any PDF, scanned ones included. OCR runs only on pages without a text layer, and if nothing in the document matches the question, it says so without calling the LLM.</p>
+            <div class="stats">
+              <div class="stat"><div class="n chrome-text">2</div><div class="l">guards against hallucination</div></div>
+              <div class="stat"><div class="n chrome-text">Live</div><div class="l">deployed on Streamlit</div></div>
+            </div>
+            <div class="chips"><span>FAISS</span><span>sentence-transformers</span><span>Tesseract</span><span>Llama 3.3</span></div>
+            <div class="links">
+              <a class="btn lead" href="https://docmind-4trkdxlqhqz3mtx3wnmpja.streamlit.app/" target="_blank" rel="noopener">Live demo ↗</a>
+              <a class="btn" href="https://github.com/nancy6547/docmind" target="_blank" rel="noopener">Code ↗</a>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="insight">
+    <div class="wrap insight">
+      <div class="txt panel">
+        <h2><small lang="ja">発見</small>Not every sleep is a bug.</h2>
+        <p>Everyone says to delete <code>waitForTimeout</code>. Reading real test suites showed that about <b>1 in 6</b> is there on purpose: it gives something bad the time to happen before the test checks that it <b>didn't</b>. Remove it and the test passes when it should fail.</p>
+        <p>So Zeitaku reads the statement after every sleep before it touches anything. It found <b>196</b> it can safely replace and <b>44</b> it must leave alone.</p>
+      </div>
+      <div class="term panel chromed">
+        <div class="titlebar"><span>zsh — zeitaku</span><svg fill="#fff" aria-hidden="true"><use href="#sigil"/></svg></div>
+<pre aria-label="Example of an intentional sleep"><span class="c">// documenso: we must NOT navigate away</span>
+<span class="k">await</span> page.waitForTimeout(<span class="s">1000</span>);
+<span class="k">await</span> expect(page).<span class="x">not</span>.toHaveURL(<span class="s">/\/admin\/users\/\d+$/</span>);
+
+<span class="c">$ zeitaku scan ./tests</span>
+Total waitForTimeout:   <span class="k">240</span>
+  replaceable:          <span class="k">196</span>
+  intentional:          <span class="x">44</span>  <span class="c">(left alone)</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap">
+      <div class="sec-head"><h2 class="panel"><small lang="ja">私について</small>About</h2></div>
+      <div class="about">
+        <div class="card panel"><div class="k">Education</div><div class="v">B.E. Computer Science <span>· SLIET Punjab, 2026</span></div></div>
+        <div class="card panel"><div class="k">Research</div><div class="v">Built an ML research project for IIT Jammu</div></div>
+        <div class="card panel"><div class="k">Open source</div><div class="v"><a href="https://github.com/documenso/documenso/issues/3445" target="_blank" rel="noopener">Documenso #3445</a> <span>· redundant E2E sleeps, found by AST analysis</span></div></div>
+        <div class="card panel"><div class="k">Languages</div><div class="v">TypeScript, Python, Kotlin</div></div>
+        <div class="card panel"><div class="k">Tools</div><div class="v">Playwright, CDP, PyTorch, Hugging Face, FAISS, LangChain</div></div>
+        <div class="card panel"><div class="k">Based in</div><div class="v">Delhi, India <span>· open to remote and relocation</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <div class="box panel chromed">
+        <h2><small lang="ja">連絡</small>Building something that has to <span class="chrome-text">work every time?</span></h2>
+        <p class="lede" style="margin:14px 0 0">I'm looking for engineering roles in testing, browser infrastructure, developer tools and AI reliability.</p>
+        <div class="reach">
+          <span class="email" id="email">singhnancy2004@gmail.com</span>
+          <button class="btn lead" id="copy" type="button">Copy email</button>
+          <a class="btn" href="https://x.com/Nancysingh251" target="_blank" rel="noopener">X ↗</a>
+          <a class="btn" href="https://github.com/nancy6547" target="_blank" rel="noopener">GitHub ↗</a>
+          <a class="btn" href="https://linkedin.com/in/nancy-singh-84367722a" target="_blank" rel="noopener">LinkedIn ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>nancy singh · 2026</span><span>halftone sky and liquid metal rendered in code</span></div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- ticker ---------- */
+  const facts = ["240 hard-coded sleeps found in 7 open-source repos", "slow 3G: fixed sleeps failed 100% of runs", "zeitaku: 0% failures", "44 sleeps left alone on purpose", "documenso issue #3445", "10 unit tests · CI green"];
+  document.getElementById("track").innerHTML = facts.concat(facts).map((f) => `<span><svg fill="#fff" aria-hidden="true"><use href="#sigil"/></svg>${f}</span>`).join("");
+
+  /* ---------- dithered halftone sky with sigils ---------- */
+  (function halftone() {
+    const cv = document.getElementById("halftone"), ctx = cv.getContext("2d");
+    // value noise
+    const perm = new Uint8Array(512); { const p = [...Array(256).keys()]; let s = 1337; for (let i = 255; i > 0; i--) { s = (s * 16807) % 2147483647; const j = s % (i + 1); [p[i], p[j]] = [p[j], p[i]]; } for (let i = 0; i < 512; i++) perm[i] = p[i & 255]; }
+    const hash = (x, y) => perm[(perm[x & 255] + y) & 511] / 255;
+    const sm = (t) => t * t * (3 - 2 * t);
+    function noise(x, y) { const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi; const a = hash(xi, yi), b = hash(xi + 1, yi), c = hash(xi, yi + 1), d = hash(xi + 1, yi + 1); const u = sm(xf), v = sm(yf); return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v; }
+    const fbm = (x, y) => { let s = 0, a = .55, f = 1; for (let o = 0; o < 5; o++) { s += a * noise(x * f, y * f); f *= 2.03; a *= .5; } return s; };
+
+    function starPath(cx, cy, R, rot) {
+      // concave four-point star, like a sigil
+      ctx.beginPath();
+      for (let i = 0; i < 4; i++) {
+        const a = rot + i * Math.PI / 2, b = a + Math.PI / 4, n = a + Math.PI / 2;
+        const tip = [cx + Math.cos(a) * R, cy + Math.sin(a) * R], next = [cx + Math.cos(n) * R, cy + Math.sin(n) * R];
+        const ctrl = [cx + Math.cos(b) * R * .12, cy + Math.sin(b) * R * .12];
+        if (i === 0) ctx.moveTo(tip[0], tip[1]);
+        ctx.quadraticCurveTo(ctrl[0], ctrl[1], next[0], next[1]);
+      }
+      ctx.closePath();
+    }
+
+    function render() {
+      const dpr = Math.min(devicePixelRatio || 1, 2), W = cv.clientWidth, H = cv.clientHeight;
+      cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.fillStyle = "#050505"; ctx.fillRect(0, 0, W, H);
+      const cell = W < 600 ? 6 : 7, sc = 1 / (W < 600 ? 120 : 210);
+      ctx.fillStyle = "#f2f2f2"; ctx.strokeStyle = "#f2f2f2"; ctx.lineWidth = 1;
+      for (let y = 0; y < H; y += cell) {
+        for (let x = 0; x < W; x += cell) {
+          let v = fbm(x * sc, y * sc * 1.15) * 1.4 - .24;        // cloud density
+          v += (y / H - .5) * .18;
+          const cx = x + cell / 2, cy = y + cell / 2;
+          if (v > .78) { ctx.fillRect(x + .5, y + .5, cell - 1.5, cell - 1.5); }
+          else if (v > .62) { ctx.beginPath(); ctx.arc(cx, cy, cell * .38, 0, 7); ctx.fill(); }
+          else if (v > .5) { ctx.beginPath(); ctx.moveTo(x + 1.5, y + 1.5); ctx.lineTo(x + cell - 1.5, y + cell - 1.5); ctx.moveTo(x + cell - 1.5, y + 1.5); ctx.lineTo(x + 1.5, y + cell - 1.5); ctx.stroke(); }
+          else if (v > .4) { ctx.beginPath(); ctx.arc(cx, cy, cell * .18, 0, 7); ctx.fill(); }
+        }
+      }
+      // horizon line
+      ctx.fillStyle = "rgba(5,5,5,.9)"; ctx.fillRect(0, Math.round(H * .56), W, 2);
+      // large black sigils with a thin chrome edge
+      const S = Math.max(W, H);
+      [[W * .1, H * .08, S * .26, .18], [W * .92, H * .3, S * .32, -.12], [W * .2, H * .88, S * .3, .4], [W * .75, H * 1.02, S * .22, .05]].forEach(([x, y, R, rot]) => {
+        starPath(x, y, R, rot); ctx.fillStyle = "#050505"; ctx.fill();
+        const g = ctx.createLinearGradient(x - R, y - R, x + R, y + R); g.addColorStop(0, "rgba(255,255,255,.85)"); g.addColorStop(.5, "rgba(255,255,255,.15)"); g.addColorStop(1, "rgba(255,255,255,.7)");
+        ctx.strokeStyle = g; ctx.lineWidth = 1.4; ctx.stroke();
+      });
+      // a small solid sigil, like a spark
+      starPath(W * .42, H * .44, Math.min(W, H) * .06, .3); ctx.fillStyle = "#050505"; ctx.fill();
+    }
+    let t; addEventListener("resize", () => { clearTimeout(t); t = setTimeout(render, 150); }); render();
+  })();
+
+  /* ---------- copy email ---------- */
+  const copyBtn = document.getElementById("copy");
+  copyBtn.addEventListener("click", () => {
+    const el = document.getElementById("email");
+    const done = () => { copyBtn.textContent = "Copied"; setTimeout(() => (copyBtn.textContent = "Copy email"), 1600); };
+    const fallback = () => { const rg = document.createRange(); rg.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(rg); copyBtn.textContent = "Selected, press Ctrl+C"; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(el.textContent).then(done, fallback); else fallback();
+  });
+
+  /* ---------- 3D tilt ---------- */
+  if (matchMedia("(hover: hover) and (pointer: fine)").matches && !reduce) {
+    document.querySelectorAll("[data-tilt]").forEach((w) => {
+      w.addEventListener("pointermove", (e) => {
+        const rc = w.getBoundingClientRect(), x = (e.clientX - rc.left) / rc.width, y = (e.clientY - rc.top) / rc.height;
+        w.style.transition = "transform .08s linear";
+        w.style.transform = `perspective(1000px) rotateX(${(0.5 - y) * 9}deg) rotateY(${(x - 0.5) * 11}deg) translateY(-4px)`;
+        w.style.setProperty("--gx", x * 100 + "%"); w.style.setProperty("--gy", y * 100 + "%");
+      });
+      w.addEventListener("pointerleave", () => { w.style.transition = ""; w.style.transform = ""; });
+    });
+  }
+
+  /* ---------- liquid metal hero ---------- */
+  if (typeof THREE === "undefined") return;
+  const canvas = document.getElementById("metal"), stage = canvas.parentElement;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(36, 1, .1, 100);
+  camera.position.set(0, 0, 9);
+
+  // black-and-white chrome matcap: studio reflections painted on a canvas
+  const mc = document.createElement("canvas"); mc.width = mc.height = 512; const g = mc.getContext("2d");
+  g.fillStyle = "#000"; g.fillRect(0, 0, 512, 512);
+  g.save(); g.beginPath(); g.arc(256, 256, 256, 0, 7); g.clip();
+  const base = g.createLinearGradient(0, 0, 0, 512);
+  [[0, "#ffffff"], [.18, "#bdbdbd"], [.36, "#1a1a1a"], [.5, "#0a0a0a"], [.56, "#9a9a9a"], [.64, "#f5f5f5"], [.78, "#3a3a3a"], [1, "#d0d0d0"]].forEach(([o, c]) => base.addColorStop(o, c));
+  g.fillStyle = base; g.fillRect(0, 0, 512, 512);
+  const band = (x, w, a) => { const b = g.createLinearGradient(x - w, 0, x + w, 0); b.addColorStop(0, "rgba(255,255,255,0)"); b.addColorStop(.5, `rgba(255,255,255,${a})`); b.addColorStop(1, "rgba(255,255,255,0)"); g.fillStyle = b; g.fillRect(0, 0, 512, 512); };
+  band(150, 40, .7); band(370, 22, .5);
+  const rim = g.createRadialGradient(256, 256, 170, 256, 256, 256); rim.addColorStop(0, "rgba(0,0,0,0)"); rim.addColorStop(1, "rgba(0,0,0,.75)"); g.fillStyle = rim; g.fillRect(0, 0, 512, 512);
+  const hi = g.createRadialGradient(180, 140, 0, 180, 140, 70); hi.addColorStop(0, "rgba(255,255,255,1)"); hi.addColorStop(1, "rgba(255,255,255,0)"); g.fillStyle = hi; g.fillRect(0, 0, 512, 512);
+  g.restore();
+  const chrome = new THREE.CanvasTexture(mc);
+  const metal = new THREE.MeshMatcapMaterial({ matcap: chrome });
+
+  const root = new THREE.Group(); scene.add(root);
+
+  // liquid blob: an icosphere whose vertices ripple with layered sine "noise"
+  const blobGeo = new THREE.SphereGeometry(1.45, 160, 120);   // indexed, so normals stay smooth like liquid metal
+  const basePos = blobGeo.attributes.position.array.slice();
+  const blob = new THREE.Mesh(blobGeo, metal); root.add(blob);
+
+  // sharp chrome sigil orbiting the blob
+  const sh = new THREE.Shape(), R = 1.05;
+  for (let i = 0; i < 4; i++) {
+    const a = i * Math.PI / 2 + Math.PI / 2, b = a + Math.PI / 4, n = a + Math.PI / 2;
+    if (i === 0) sh.moveTo(Math.cos(a) * R, Math.sin(a) * R);
+    sh.quadraticCurveTo(Math.cos(b) * R * .1, Math.sin(b) * R * .1, Math.cos(n) * R, Math.sin(n) * R);
+  }
+  const sigGeo = new THREE.ExtrudeGeometry(sh, { depth: .08, bevelEnabled: true, bevelThickness: .05, bevelSize: .03, bevelSegments: 4, curveSegments: 24 }); sigGeo.center();
+  const sigil = new THREE.Mesh(sigGeo, metal); root.add(sigil);
+  const sigil2 = new THREE.Mesh(sigGeo, metal); sigil2.scale.setScalar(.45); root.add(sigil2);
+
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(2.55, .012, 12, 200), metal); ring.rotation.x = 1.25; root.add(ring);
+
+  // requests: small chrome beads that travel around the ring and dissolve when answered
+  const beadGeo = new THREE.SphereGeometry(1, 20, 20); let beads = [];
+  let lastActivity = performance.now(), burstUntil = 0, nextBurst = performance.now() + 400, idle = false, idleSince = 0;
+  function spawn(now) {
+    if (beads.length > 12) return;
+    const m = new THREE.Mesh(beadGeo, new THREE.MeshMatcapMaterial({ matcap: chrome, transparent: true, opacity: 1 }));
+    m.userData = { a0: Math.random() * Math.PI * 2, born: now, life: 900 + Math.random() * 1600, size: .07 + Math.random() * .07 };
+    m.scale.setScalar(.01); root.add(m); beads.push(m); lastActivity = now;
+  }
+
+  function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+  addEventListener("resize", resize); resize();
+  let mx = 0, my = 0;
+  stage.addEventListener("pointermove", (e) => { const rc = stage.getBoundingClientRect(); mx = ((e.clientX - rc.left) / rc.width - .5) * 2; my = ((e.clientY - rc.top) / rc.height - .5) * 2; });
+  stage.addEventListener("pointerleave", () => { mx = 0; my = 0; });
+  const elIn = document.getElementById("inflight"), elQ = document.getElementById("quiet"), elS = document.getElementById("state");
+  const v = new THREE.Vector3();
+
+  function frame(now) {
+    const t = now / 1000;
+    if (now >= nextBurst) { burstUntil = now + 900 + Math.random() * 800; nextBurst = burstUntil + 3200 + Math.random() * 1200; }
+    if (now < burstUntil && Math.random() < .12) spawn(now);
+    beads = beads.filter((b) => {
+      const u = b.userData, p = (now - u.born) / u.life;
+      if (p >= 1) { const f = (now - u.born - u.life) / 260; if (f >= 1) { root.remove(b); b.material.dispose(); lastActivity = now; return false; } b.material.opacity = 1 - f; b.scale.setScalar(u.size * (1 + f)); return true; }
+      const a = u.a0 + p * 3.2;
+      v.set(Math.cos(a) * 2.55, 0, Math.sin(a) * 2.55).applyAxisAngle(new THREE.Vector3(1, 0, 0), 1.25 - Math.PI / 2);
+      b.position.copy(v); b.scale.setScalar(u.size * Math.min(1, p * 5)); return true;
+    });
+    const live = beads.filter((b) => now - b.userData.born < b.userData.life).length;
+    const quiet = live ? 0 : Math.round(now - lastActivity);
+    if (!idle && live === 0 && beads.length === 0 && quiet >= 500) { idle = true; idleSince = now; }
+    if (live) idle = false;
+    elIn.textContent = live; elQ.textContent = Math.min(quiet, 9999);
+    elS.textContent = idle ? "IDLE" : "BUSY"; elS.className = "pill" + (idle ? " idle" : "");
+
+    // ripple: busy = restless liquid, idle = calm and glassy
+    const calm = idle ? Math.min((now - idleSince) / 700, 1) : 0, amp = .17 * (1 - calm * .7);
+    const pos = blobGeo.attributes.position.array;
+    for (let i = 0; i < pos.length; i += 3) {
+      const x = basePos[i], y = basePos[i + 1], z = basePos[i + 2];
+      const n = Math.sin(x * 2.1 + t * 1.3) * Math.cos(y * 2.4 - t * 1.1) + Math.sin(z * 2.7 + t * .9) * .6 + Math.sin((x + y) * 3.3 - t * 1.7) * .3;
+      const k = 1 + amp * n;
+      pos[i] = x * k; pos[i + 1] = y * k; pos[i + 2] = z * k;
+    }
+    blobGeo.attributes.position.needsUpdate = true; blobGeo.computeVertexNormals();
+    blob.rotation.y = t * .18; blob.rotation.x = Math.sin(t * .3) * .2;
+
+    sigil.position.set(Math.cos(t * .6) * 2.1, .9 + Math.sin(t * .8) * .25, Math.sin(t * .6) * 1.2);
+    sigil.rotation.set(Math.sin(t * .5) * .3, t * (.8 + calm * 1.6), t * .2);
+    sigil2.position.set(Math.cos(t * .6 + 2.6) * 2.3, -1.2 + Math.sin(t) * .2, Math.sin(t * .6 + 2.6) * 1.2);
+    sigil2.rotation.set(0, -t * 1.1, t * .4);
+    ring.rotation.z += .003 + calm * .01;
+
+    root.rotation.y += ((mx * .4) - root.rotation.y) * .05;
+    root.rotation.x += ((my * .3) - root.rotation.x) * .05;
+    renderer.render(scene, camera);
+    if (!reduce) requestAnimationFrame(frame);
+  }
+  if (reduce) { nextBurst = Infinity; lastActivity = performance.now() - 1000; frame(performance.now()); } else requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
