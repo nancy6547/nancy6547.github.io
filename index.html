@@ -127,7 +127,7 @@ h2 small { display: block; font: 400 12.5px var(--jp); letter-spacing: .4em; col
 .sec-head p { margin: 0; max-width: 30em; color: var(--muted); padding: 14px 18px; }
 
 /* ---------- project windows ---------- */
-.work { display: grid; gap: 22px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.work { display: grid; gap: 22px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .win { min-width: 0; display: flex; flex-direction: column; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.2,.8,.2,1); will-change: transform; overflow: hidden; }
 .win .glare { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s; background: radial-gradient(360px circle at var(--gx,50%) var(--gy,0%), rgba(255,255,255,.12), transparent 60%); }
 .win:hover .glare { opacity: 1; }
@@ -253,7 +253,7 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
     <div class="wrap">
       <div class="sec-head">
         <h2 class="panel">Selected work</h2>
-        <p class="panel">Three projects. Zeitaku is the one I'm most proud of.</p>
+        <p class="panel">Four projects. Zeitaku is the one I'm most proud of.</p>
       </div>
       <div class="work">
 
@@ -318,6 +318,21 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
             </div>
           </div>
         </article>
+
+        <article class="win panel chromed" data-tilt>
+          <div class="glare"></div>
+          <div class="titlebar"><span>~/attention-guard</span><svg fill="#fff" aria-hidden="true"><use href="#sigil"/></svg></div>
+          <div class="body">
+            <div class="top">
+              <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/></svg></div>
+              <div><h3>Attention-Guard</h3><div class="kind">Python · ML · Chrome extension</div></div>
+            </div>
+            <p>My own idea: a model that looks at the URL of each open browser tab and decides if it's focus or distraction. I wrote the logistic regression classifier and the <code>classify_url()</code> function myself, and now I'm turning it into a Chrome extension that nudges you when you drift.</p>
+            <div class="chips"><span>Logistic regression</span><span>URL classifier</span><span>Chrome extension</span></div>
+            <div class="links"><span class="soon">Chrome extension in progress</span></div>
+          </div>
+        </article>
+
 
       </div>
     </div>
