@@ -61,6 +61,11 @@ code { font-family: var(--mono); font-size: .86em; color: #fff; border: 1px soli
 .kicker { font: 400 12px var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); display: inline-flex; gap: 12px; align-items: center; }
 .kicker svg { width: 12px; height: 12px; }
 h1 { font-family: var(--display); font-weight: 800; font-size: clamp(42px, 6.6vw, 84px); line-height: .96; letter-spacing: -.04em; margin: 18px 0 18px; text-wrap: balance; animation: sheen 7s ease-in-out infinite alternate; }
+.name-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.name-row h1 { min-width: 0; }
+.portrait { flex: none; width: clamp(104px, 13vw, 158px); aspect-ratio: 26 / 34; max-width: 100%; border-radius: 999px 999px 18px 18px; overflow: hidden; position: relative;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.55), 0 0 0 5px rgba(5,5,5,.9), 0 0 0 6px rgba(255,255,255,.18), 0 18px 40px -16px rgba(255,255,255,.35); }
+.portrait canvas { display: block; width: 100%; height: 100%; }
 @keyframes sheen { from { background-position: 0 0; } to { background-position: 0 100%; } }
 .role { font: 500 clamp(18px, 2.1vw, 23px)/1.35 var(--body); margin: 0 0 14px; }
 .role em { font-style: normal; border-bottom: 1px solid #fff; }
@@ -148,6 +153,7 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
   .work, .insight, .about { grid-template-columns: 1fr; }
   .vert { display: none; }
 }
+@media (max-width: 420px) { .portrait { width: 92px; } }
 @media (max-width: 560px) { .nav { display: none; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 </style>
@@ -179,7 +185,10 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
       <div class="vert" lang="ja">静かな失敗を見つける</div>
       <div class="copy panel chromed">
         <div class="kicker"><svg fill="#fff" aria-hidden="true"><use href="#sigil"/></svg>software &amp; AI reliability</div>
-        <h1 class="chrome-text">Nancy Singh</h1>
+        <div class="name-row">
+          <h1 class="chrome-text">Nancy Singh</h1>
+          <div class="portrait"><canvas id="portrait" aria-label="A chrome-and-halftone portrait of a woman in profile"></canvas></div>
+        </div>
         <p class="role">I build tools that catch <em>quiet failures</em>.</p>
         <p class="lede">The bugs I care about don't crash. They're the <b>test that passes 80% of the time</b> and the <b>RAG answer that sounds right but isn't in the source</b>. I find them, measure them, and ship the fix.</p>
         <div class="cta">
@@ -393,6 +402,52 @@ Total waitForTimeout:   <span class="k">240</span>
       starPath(W * .42, H * .44, Math.min(W, H) * .06, .3); ctx.fillStyle = "#050505"; ctx.fill();
     }
     let t; addEventListener("resize", () => { clearTimeout(t); t = setTimeout(render, 150); }); render();
+  })();
+
+  /* ---------- portrait: chrome profile over a halftone sky ---------- */
+  (function portrait() {
+    const cv = document.getElementById("portrait"), ctx = cv.getContext("2d"), dpr = Math.min(devicePixelRatio || 1, 2) * 1.5;
+    const W = 260, H = 340; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const HAIR = new Path2D("M108 18 C72 16 44 42 38 86 C33 124 42 156 36 196 C31 232 22 262 14 340 L104 340 C98 300 92 262 92 226 C86 204 80 182 82 160 C74 118 88 72 136 56 C130 32 120 20 108 18 Z");
+    const FACE = new Path2D("M108 24 C132 24 146 44 147 68 C148 78 151 85 152 92 L162 114 C163 118 161 120 157 121 L152 122 C153 126 154 130 152 133 C151 135 153 137 152 140 C151 144 149 146 146 147 C147 154 145 160 140 165 C133 170 125 172 119 173 L121 214 C126 236 142 254 166 270 L176 340 L82 340 C88 300 92 262 92 226 C86 204 82 182 84 160 C74 136 76 96 86 66 C92 42 98 26 108 24 Z");
+
+    // halftone sky inside the arch
+    ctx.fillStyle = "#050505"; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#e9e9e9"; ctx.strokeStyle = "#e9e9e9";
+    for (let y = 0; y < H; y += 6) for (let x = 0; x < W; x += 6) {
+      const v = .5 + .5 * Math.sin(x * .045 + Math.cos(y * .03) * 2.2) * Math.cos(y * .038 - x * .012) - y / H * .35;
+      const cx = x + 3, cy = y + 3;
+      if (v > .78) { ctx.beginPath(); ctx.arc(cx, cy, 2.3, 0, 7); ctx.fill(); }
+      else if (v > .6) { ctx.lineWidth = .8; ctx.beginPath(); ctx.moveTo(x + 1, y + 1); ctx.lineTo(x + 5, y + 5); ctx.moveTo(x + 5, y + 1); ctx.lineTo(x + 1, y + 5); ctx.stroke(); }
+      else if (v > .42) { ctx.beginPath(); ctx.arc(cx, cy, .9, 0, 7); ctx.fill(); }
+    }
+
+    // liquid-chrome face and hair
+    const face = ctx.createLinearGradient(78, 0, 168, 0);
+    [[0, "#1b1b1b"], [.35, "#5a5a5a"], [.6, "#d6d6d6"], [.75, "#7a7a7a"], [.9, "#f6f6f6"], [1, "#ffffff"]].forEach(([o, c]) => face.addColorStop(o, c));
+    ctx.fillStyle = face; ctx.fill(FACE);
+    const neckShade = ctx.createLinearGradient(0, 170, 0, 240); neckShade.addColorStop(0, "rgba(0,0,0,.55)"); neckShade.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.save(); ctx.clip(FACE); ctx.fillStyle = neckShade; ctx.fillRect(80, 168, 100, 72); ctx.restore();
+    const hair = ctx.createLinearGradient(14, 0, 140, 0);
+    [[0, "#0d0d0d"], [.3, "#3c3c3c"], [.5, "#e8e8e8"], [.58, "#8a8a8a"], [.72, "#262626"], [1, "#0a0a0a"]].forEach(([o, c]) => hair.addColorStop(o, c));
+    ctx.fillStyle = hair; ctx.fill(HAIR);
+    ctx.save(); ctx.clip(HAIR); ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 1;
+    for (let i = 0; i < 7; i++) { ctx.beginPath(); ctx.moveTo(70 + i * 7, 20); ctx.bezierCurveTo(40 + i * 6, 120, 60 + i * 5, 220, 30 + i * 9, 340); ctx.stroke(); }
+    ctx.restore();
+
+    // rim light on the profile edge
+    ctx.save(); ctx.clip(FACE); ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.lineWidth = 2.2; ctx.stroke(FACE); ctx.restore();
+
+    // eye, lashes, lips
+    ctx.strokeStyle = "#0a0a0a"; ctx.lineCap = "round";
+    ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(130, 92); ctx.quadraticCurveTo(137, 88, 143, 92); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(141, 90); ctx.lineTo(147, 86); ctx.stroke();
+    ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(126, 81); ctx.quadraticCurveTo(136, 76, 146, 80); ctx.stroke();
+    ctx.fillStyle = "#3a3a3a"; ctx.beginPath(); ctx.ellipse(149.5, 136.5, 3.4, 2.4, 0, 0, 7); ctx.fill();
+
+    // small sigil spark
+    const sp = new Path2D("M214 40 C215.5 58 220 62.5 238 64 C220 65.5 215.5 70 214 88 C212.5 70 208 65.5 190 64 C208 62.5 212.5 58 214 40 Z");
+    ctx.fillStyle = "#050505"; ctx.fill(sp); ctx.strokeStyle = "#f2f2f2"; ctx.lineWidth = 1.2; ctx.stroke(sp);
   })();
 
   /* ---------- copy email ---------- */
