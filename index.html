@@ -10,7 +10,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23050505'/%3E%3Cpath fill='%23f2f2f2' d='M50 8 C53 40 60 47 92 50 C60 53 53 60 50 92 C47 60 40 53 8 50 C40 47 47 40 50 8 Z'/%3E%3C/svg%3E">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Nancy Singh · testing tools and AI reliability">
-<meta property="og:description" content="I fix flaky tests and LLMs that make stuff up. Zeitaku, DocMind, HalluGuard.">
+<meta property="og:description" content="I fix flaky tests and LLMs that make stuff up. Zeitaku, Junban, DocMind, HalluGuard.">
 <meta property="og:url" content="https://nancy6547.github.io/">
 <meta property="og:image" content="https://nancy6547.github.io/og.png">
 <meta property="og:image:width" content="1200">
@@ -127,7 +127,9 @@ h2 small { display: block; font: 400 12.5px var(--jp); letter-spacing: .4em; col
 .sec-head p { margin: 0; max-width: 30em; color: var(--muted); padding: 14px 18px; }
 
 /* ---------- project windows ---------- */
-.work { display: grid; gap: 22px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.work { display: grid; gap: 22px; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.work > .win { grid-column: span 2; }
+.work > .win:nth-child(-n+2) { grid-column: span 3; }
 .win { min-width: 0; display: flex; flex-direction: column; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.2,.8,.2,1); will-change: transform; overflow: hidden; }
 .win .glare { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s; background: radial-gradient(360px circle at var(--gx,50%) var(--gy,0%), rgba(255,255,255,.12), transparent 60%); }
 .win:hover .glare { opacity: 1; }
@@ -183,6 +185,7 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
   .hero .wrap { grid-template-columns: 1fr; padding-block: 24px 36px; }
   .stage { max-width: 480px; margin: 0 auto; }
   .work, .insight, .about { grid-template-columns: 1fr; }
+  .work > .win, .work > .win:nth-child(-n+2) { grid-column: auto; }
   .vert { display: none; }
 }
 @media (max-width: 520px) { .name-row { flex-direction: column-reverse; align-items: flex-start; } .portrait { width: min(70%, 240px); } }
@@ -253,7 +256,7 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
     <div class="wrap">
       <div class="sec-head">
         <h2 class="panel">Selected work</h2>
-        <p class="panel">Four projects. Zeitaku is the one I'm most proud of.</p>
+        <p class="panel">Five projects. Zeitaku and Junban are the two I'm most proud of.</p>
       </div>
       <div class="work">
 
@@ -279,6 +282,29 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
             </div>
           </div>
         </article>
+
+        <article class="win panel chromed" data-tilt>
+          <div class="glare"></div>
+          <div class="titlebar"><span>~/junban</span><svg fill="#fff" aria-hidden="true"><use href="#sigil"/></svg></div>
+          <div class="body">
+            <div class="top">
+              <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M4 12h16M4 18h7"/><path d="M17 3l3 3-3 3"/></svg></div>
+              <div><h3>Junban</h3><div class="kind">TypeScript · testing</div></div>
+            </div>
+            <p>Finds the exact order of API responses that makes a flaky Playwright test fail. It holds each response in the browser and lets them through in different orders, then shrinks the failure down to one rule like "fails when /api/cart arrives before /api/user" and writes a test that fails every time.</p>
+            <div class="stats">
+              <div class="stat"><div class="n chrome-text">6/6</div><div class="l">rare races caught by run 5</div></div>
+              <div class="stat"><div class="n fail">2/6</div><div class="l">caught by 3,000 plain reruns</div></div>
+              <div class="stat"><div class="n chrome-text">20/20</div><div class="l">repro tests fail every run</div></div>
+              <div class="stat"><div class="n chrome-text">0</div><div class="l">false alarms on the bug-free page</div></div>
+            </div>
+            <div class="chips"><span>CDP Fetch</span><span>Playwright</span><span>Delta debugging</span><span>Vitest + CI</span></div>
+            <div class="links">
+              <a class="btn lead" href="https://github.com/nancy6547/junban" target="_blank" rel="noopener">Code ↗</a>
+            </div>
+          </div>
+        </article>
+
 
         <article class="win panel chromed" data-tilt>
           <div class="glare"></div>
