@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zeitaku playground · Nancy Singh</title>
+<meta name="description" content="Paste a Playwright test. Zeitaku finds hard-coded sleeps with the TypeScript compiler, tells you which are safe to replace, and rewrites them. Runs entirely in your browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23050505'/%3E%3Cpath fill='%23f2f2f2' d='M50 8 C53 40 60 47 92 50 C60 53 53 60 50 92 C47 60 40 53 8 50 C40 47 47 40 50 8 Z'/%3E%3C/svg%3E">
+<style>
+:root { --bg:#070707; --panel:#101010; --panel2:#161616; --edge:#262626; --fg:#f2f2f2; --muted:#a8a8a8; --faint:#5c5c5c; --good:#7ee2a8; --good-t:rgba(126,226,168,.12); --warn:#f0c674; --warn-t:rgba(240,198,116,.12); --mono: ui-monospace,"JetBrains Mono",Consolas,monospace; --sans:"Segoe UI",system-ui,-apple-system,sans-serif; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.55 var(--sans); }
+a { color:inherit; }
+header { max-width:1200px; margin:0 auto; padding:28px 20px 8px; }
+header .crumbs { font:12px var(--mono); color:var(--muted); }
+h1 { font-size:clamp(26px,4vw,40px); letter-spacing:-.02em; margin:8px 0 6px; }
+header p { color:var(--muted); max-width:760px; margin:0; }
+html, body { overflow-x:hidden; }
+main { max-width:1200px; margin:0 auto; padding:20px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.card { background:var(--panel); border:1px solid var(--edge); border-radius:14px; padding:16px; min-width:0; display:flex; flex-direction:column; gap:10px; }
+.card h2 { margin:0; font-size:14px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; }
+textarea, pre { width:100%; min-height:420px; margin:0; background:var(--panel2); color:var(--fg); border:1px solid var(--edge); border-radius:10px; padding:12px 14px; font:12.5px/1.6 var(--mono); resize:vertical; overflow:auto; white-space:pre; tab-size:2; }
+textarea:focus-visible, button:focus-visible, select:focus-visible { outline:2px solid var(--fg); outline-offset:2px; }
+.row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+button, select { all:unset; cursor:pointer; border:1px solid var(--edge); border-radius:999px; padding:8px 14px; font:12.5px var(--mono); color:var(--fg); background:var(--panel2); }
+button.primary { background:var(--fg); color:var(--bg); font-weight:600; border-color:var(--fg); }
+.summary { grid-column:1/-1; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.stat { background:var(--panel); border:1px solid var(--edge); border-radius:14px; padding:14px 16px; }
+.stat b { display:block; font-size:28px; letter-spacing:-.02em; }
+.stat span { color:var(--muted); font-size:13px; }
+.list { grid-column:1/-1; }
+table { width:100%; border-collapse:collapse; font-size:13.5px; }
+th, td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--edge); vertical-align:top; }
+th { color:var(--muted); font-weight:500; font:12px var(--mono); }
+td code { font:12.5px var(--mono); }
+.pill { display:inline-block; padding:2px 9px; border-radius:999px; font:600 11.5px var(--mono); }
+.pill.rep { background:var(--good-t); color:var(--good); }
+.pill.int { background:var(--warn-t); color:var(--warn); }
+.hl-rep { background:var(--good-t); color:var(--good); border-radius:3px; }
+.hl-int { background:var(--warn-t); color:var(--warn); border-radius:3px; }
+.note { color:var(--muted); font-size:13px; }
+.loading { color:var(--muted); font:13px var(--mono); }
+footer { max-width:1200px; margin:0 auto; padding:10px 20px 40px; color:var(--muted); font-size:13px; }
+@media (max-width:860px) { main { grid-template-columns:1fr; } .summary { grid-template-columns:1fr; } textarea, pre { min-height:280px; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="crumbs"><a href="../../">nancy6547.github.io</a> / demos / zeitaku</div>
+  <h1>Zeitaku playground</h1>
+  <p>Paste a Playwright test. Zeitaku parses it with the TypeScript compiler, finds every hard-coded <code>waitForTimeout</code>, checks whether each sleep is guarding a "should NOT happen" assertion, and rewrites only the safe ones into a network-aware wait. Everything runs in your browser; nothing is uploaded.</p>
+</header>
+
+<main>
+  <section class="card" aria-labelledby="in-h">
+    <h2 id="in-h">Your test <span class="row">
+      <select id="example" aria-label="Load an example">
+        <option value="shop">Example: checkout test</option>
+        <option value="admin">Example: from a real admin suite</option>
+        <option value="clean">Example: already clean</option>
+      </select>
+    </span></h2>
+    <textarea id="input" spellcheck="false" aria-label="Playwright test source"></textarea>
+    <div class="row"><button class="primary" id="run">Analyze</button><span class="loading" id="status">Loading the TypeScript compiler…</span></div>
+  </section>
+
+  <section class="card" aria-labelledby="out-h">
+    <h2 id="out-h"><span>After <code>zeitaku fix</code></span> <button id="copy" type="button">Copy</button></h2>
+    <pre id="output" aria-live="polite"></pre>
+    <p class="note">Green: replaced with <code>__zeitaku.idle(page)</code>, which continues when the page's network is actually quiet. Amber: left alone on purpose.</p>
+  </section>
+
+  <div class="summary" id="summary"></div>
+
+  <section class="card list" aria-labelledby="list-h">
+    <h2 id="list-h">Every sleep found</h2>
+    <div id="table" style="overflow-x:auto"></div>
+  </section>
+</main>
+
+<footer>
+  This page runs the same <code>findSleeps</code> / <code>fixCode</code> logic as the CLI (<a href="https://github.com/nancy6547/zeitaku/blob/main/src/core/sleeps.ts">src/core/sleeps.ts</a>), with the TypeScript 5.9 compiler loaded in the page. The network-aware wait itself needs a real browser under test, so it isn't run here: see the <a href="https://github.com/nancy6547/zeitaku#results">benchmarks</a>.
+  · <a href="https://github.com/nancy6547/zeitaku">GitHub</a> · <a href="../../">Portfolio</a>
+</footer>
+
+<script>
+const EXAMPLES = {
+  shop: `import { test, expect } from "@playwright/test";
+
+test("checkout shows the order total", async ({ page }) => {
+  await page.goto("/cart");
+  await page.getByRole("button", { name: "Checkout" }).click();
+  await page.waitForTimeout(3000); // wait for the API...
+  await expect(page.locator("#total")).toHaveText("3 items, ₹1299");
+});
+
+test("coupon applies a discount", async ({ page }) => {
+  await page.goto("/cart");
+  await page.fill("#coupon", "SAVE10");
+  await page.click("#apply");
+  await page.waitForTimeout(2000);
+  const total = await page.textContent("#total");
+  expect(total).toContain("₹1169");
+});
+
+test("removing an item does not open the checkout", async ({ page }) => {
+  await page.goto("/cart");
+  await page.click("#remove-first");
+  // give a wrong redirect time to happen before we check it didn't
+  await page.waitForTimeout(1000);
+  await expect(page).not.toHaveURL(/checkout/);
+});
+`,
+  admin: `import { test, expect } from "@playwright/test";
+
+test("admin can search users", async ({ page }) => {
+  await page.goto("/admin/users");
+  await page.getByPlaceholder("Search").fill("nancy");
+  await page.waitForTimeout(1000);
+  await expect(page.getByRole("row")).toHaveCount(2);
+});
+
+test("clicking a row does not navigate away", async ({ page }) => {
+  await page.goto("/admin/users");
+  await page.getByRole("row").nth(1).click();
+  await page.waitForTimeout(1000);
+  await expect(page).not.toHaveURL(/\\/admin\\/users\\/\\d+$/);
+});
+
+test("deleted user disappears", async ({ page }) => {
+  await page.goto("/admin/users");
+  await page.getByRole("button", { name: "Delete" }).first().click();
+  await page.waitForTimeout(500);
+  await expect(page.getByText("nancy@example.com")).toBeHidden();
+});
+`,
+  clean: `import { test, expect } from "@playwright/test";
+
+test("cart total", async ({ page }) => {
+  await page.goto("/cart");
+  // web-first assertions retry on their own: no sleep needed
+  await expect(page.locator("#total")).toHaveText("3 items, ₹1299");
+});
+`,
+};
+
+const LOOKAHEAD = 3;
+const NEGATIVE = [".toBeHidden(", ".not.", ".toBeLessThan", ".toHaveCount(0)", ".toHaveLength(0)", ".toBeFalsy(", ".toBeNull("];
+const isNegativeCheck = (code) => NEGATIVE.find((p) => code.includes(p)) || null;
+
+function statementOf(node) {
+  let cur = node;
+  while (cur && !ts.isExpressionStatement(cur) && !ts.isVariableStatement(cur)) cur = cur.parent;
+  return cur;
+}
+function codeAfter(statement, sf) {
+  const parent = statement.parent;
+  if (!ts.isBlock(parent) && !ts.isSourceFile(parent)) return "";
+  const sibs = parent.statements;
+  const i = sibs.indexOf(statement);
+  return sibs.slice(i + 1, i + 1 + LOOKAHEAD).map((s) => s.getText(sf)).join("\n");
+}
+function findSleeps(code) {
+  const sf = ts.createSourceFile("test.ts", code, ts.ScriptTarget.Latest, true);
+  const out = [];
+  (function visit(node) {
+    if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression) && node.expression.name.text === "waitForTimeout") {
+      const arg = node.arguments[0];
+      const st = statementOf(node);
+      const after = st ? codeAfter(st, sf) : "";
+      const why = isNegativeCheck(after);
+      out.push({
+        line: sf.getLineAndCharacterOfPosition(node.getStart()).line + 1,
+        receiver: node.expression.expression.getText(),
+        ms: arg && ts.isNumericLiteral(arg) ? Number(arg.text) : null,
+        start: node.getStart(), end: node.getEnd(),
+        kind: why ? "intentional" : "replaceable", why,
+      });
+    }
+    ts.forEachChild(node, visit);
+  })(sf);
+  return { sleeps: out, sf };
+}
+function fixCode(code) {
+  const { sleeps, sf } = findSleeps(code);
+  const rep = sleeps.filter((s) => s.kind === "replaceable");
+  if (!rep.length) return { output: code, marks: [] };
+  // Edits from the END backwards, so earlier positions stay valid.
+  let output = code;
+  const marks = [];
+  for (const s of [...rep].sort((a, b) => b.start - a.start)) {
+    const text = "__zeitaku.idle(" + s.receiver + ")";
+    output = output.slice(0, s.start) + text + output.slice(s.end);
+  }
+  const header = 'import { __zeitaku } from "zeitaku/runtime";\n' +
+    "test.beforeEach(async ({ page }) => { await __zeitaku.attach(page); });\n" +
+    "test.afterEach(async ({ page }, testInfo) => {\n" +
+    "  if (testInfo.status !== testInfo.expectedStatus) console.log(__zeitaku.diagnose(page));\n" +
+    "});";
+  const lastImport = sf.statements.filter(ts.isImportDeclaration).pop();
+  if (lastImport) { const at = lastImport.getEnd(); output = output.slice(0, at) + "\n" + header + output.slice(at); }
+  else output = header + "\n" + output;
+  return { output, sleeps };
+}
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+
+function highlight(out, sleeps) {
+  // Mark rewritten calls (green) and kept sleeps (amber) in the output text.
+  let html = esc(out);
+  html = html.replace(/__zeitaku\.idle\([^)]*\)/g, (m) => `<span class="hl-rep">${m}</span>`);
+  html = html.replace(/[\w.]+\.waitForTimeout\([^)]*\)/g, (m) => `<span class="hl-int">${m}</span>`);
+  return html;
+}
+
+function run() {
+  const code = $("#input").value;
+  let res;
+  try { res = fixCode(code); } catch (e) { $("#output").textContent = "Could not parse: " + e.message; return; }
+  const sleeps = res.sleeps || findSleeps(code).sleeps;
+  $("#output").innerHTML = highlight(res.output, sleeps);
+  const rep = sleeps.filter((s) => s.kind === "replaceable");
+  const keep = sleeps.length - rep.length;
+  const ms = rep.reduce((a, s) => a + (s.ms || 0), 0);
+  $("#summary").innerHTML = `
+    <div class="stat"><b>${sleeps.length}</b><span>hard-coded sleeps found</span></div>
+    <div class="stat"><b>${rep.length}</b><span>safe to replace${ms ? ` (${(ms / 1000).toFixed(1)} s of fixed waiting)` : ""}</span></div>
+    <div class="stat"><b>${keep}</b><span>left alone: they guard a "should NOT happen" check</span></div>`;
+  $("#table").innerHTML = sleeps.length ? `<table>
+    <thead><tr><th>Line</th><th>Call</th><th>Verdict</th><th>Why</th></tr></thead>
+    <tbody>${sleeps.map((s) => `<tr>
+      <td>${s.line}</td>
+      <td><code>${esc(s.receiver)}.waitForTimeout(${s.ms ?? "?"})</code></td>
+      <td><span class="pill ${s.kind === "replaceable" ? "rep" : "int"}">${s.kind}</span></td>
+      <td>${s.kind === "replaceable"
+        ? "The next lines don't check that something stayed absent, so waiting for the network to go quiet is safe and usually faster."
+        : `The next lines check that something did <b>not</b> happen (<code>${esc(s.why)}</code>). Without the sleep, that check would run too early and pass when it should fail.`}</td>
+    </tr>`).join("")}</tbody></table>` : `<p class="note">No <code>waitForTimeout</code> calls found. Nice.</p>`;
+}
+
+function load(name) { $("#input").value = EXAMPLES[name]; if (window.ts) run(); }
+$("#example").addEventListener("change", (e) => load(e.target.value));
+$("#run").addEventListener("click", run);
+$("#input").addEventListener("keydown", (e) => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") run(); });
+$("#copy").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText($("#output").textContent); $("#copy").textContent = "Copied"; setTimeout(() => ($("#copy").textContent = "Copy"), 1200); } catch {}
+});
+$("#input").value = EXAMPLES.shop;
+
+const s = document.createElement("script");
+s.src = "typescript.min.js";
+s.onload = () => { $("#status").textContent = "TypeScript " + ts.version + " loaded · Ctrl+Enter to analyze"; run(); };
+s.onerror = () => { $("#status").textContent = "Couldn't load the TypeScript compiler. Refresh to try again."; };
+document.head.appendChild(s);
+</script>
+</body>
+</html>
