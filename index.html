@@ -366,8 +366,8 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
             </div>
             <p>Upload a PDF and ask questions about it, scanned PDFs too. It only runs OCR on pages that have no text, which made normal PDFs way faster. If nothing in the doc matches, it just says it doesn't know instead of asking the LLM.</p>
             <div class="stats">
-              <div class="stat"><div class="n chrome-text">2</div><div class="l">guards against hallucination</div></div>
-              <div class="stat"><div class="n chrome-text">Live</div><div class="l">deployed on Streamlit</div></div>
+              <div class="stat"><div class="n chrome-text">96%</div><div class="l">right chunk in the top 3 (hybrid search; 88% with embeddings alone)</div></div>
+              <div class="stat"><div class="n chrome-text">83%</div><div class="l">scanned-page questions found (50% before hybrid)</div></div>
             </div>
             <div class="chips"><span>FAISS</span><span>sentence-transformers</span><span>Tesseract</span><span>Llama 3.3</span></div>
             <div class="links">
@@ -413,6 +413,11 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
           <b>Clearing location emulation no longer pins the page to 0,0</b>
           <span class="what">Every emulate call moved the page to latitude 0, longitude 0. It now clears the override over CDP, with a real-browser test.</span>
         </a>
+        <a class="pr panel" href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3148" target="_blank" rel="noopener">
+          <span class="repo">Google · chrome-devtools-mcp #3148 <span class="state">PR open</span></span>
+          <b>Unhandled promise errors keep their message</b>
+          <span class="what">Rejections showed as a bare "Uncaught (in promise)" and different ones merged into "[3 times]". Now each shows its reason.</span>
+        </a>
         <a class="pr panel" href="https://github.com/browserbase/stagehand/pull/3175" target="_blank" rel="noopener">
           <span class="repo">Browserbase · stagehand #3175 <span class="state">PR open</span></span>
           <b>Fix to Stagehand's network-idle wait</b>
@@ -454,7 +459,7 @@ Total waitForTimeout:   <span class="k">240</span>
       <div class="about">
         <div class="card panel"><div class="k">Education</div><div class="v">B.E. Computer Science <span>· SLIET Punjab · class of 2026 · available full-time now</span></div></div>
         <div class="card panel"><div class="k">Research</div><div class="v">Built an ML research project for IIT Jammu</div></div>
-        <div class="card panel"><div class="k">Open source</div><div class="v"><a href="#oss">Chrome DevTools MCP, Stagehand</a> <span>· 3 PRs open, plus a Documenso issue</span></div></div>
+        <div class="card panel"><div class="k">Open source</div><div class="v"><a href="#oss">Chrome DevTools MCP, Stagehand</a> <span>· 4 PRs open, plus a Documenso issue</span></div></div>
         <div class="card panel"><div class="k">Languages</div><div class="v">TypeScript, Python, Kotlin</div></div>
         <div class="card panel"><div class="k">Tools</div><div class="v">Playwright, CDP, PyTorch, Hugging Face, FAISS, LangChain</div></div>
         <div class="card panel"><div class="k">Based in</div><div class="v">Delhi, India <span>· open to remote and relocation</span></div></div>
