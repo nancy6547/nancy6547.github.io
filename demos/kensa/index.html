@@ -1,0 +1,60 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Kensa demo: a handbook bot with 3 planted bugs</title><style>
+:root { --bg:#070707; --panel:#101010; --edge:#262626; --fg:#f2f2f2; --muted:#a3a3a3; --bad:#ff5d5d; --bad-tint:rgba(255,93,93,.12); --good:#7ee2a8; --good-tint:rgba(126,226,168,.1); --mono:ui-monospace,"JetBrains Mono","SF Mono",Consolas,monospace; --sans:"Inter","Segoe UI",system-ui,-apple-system,sans-serif; }
+@media (prefers-color-scheme: light) { :root { --bg:#f6f6f4; --panel:#fff; --edge:#e2e2df; --fg:#121212; --muted:#5a5a5a; --bad:#d62f2f; --bad-tint:rgba(214,47,47,.08); --good:#1d8a4f; --good-tint:rgba(29,138,79,.08); } }
+* { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.6 var(--sans); }
+main { max-width:920px; margin:0 auto; padding:32px 16px 64px; }
+h1 { font-size:26px; letter-spacing:-.02em; margin:0 0 6px; } .sub { color:var(--muted); margin:0 0 24px; }
+.status { display:inline-block; font:600 13px var(--mono); padding:4px 10px; border-radius:999px; }
+.fail { background:var(--bad-tint); color:var(--bad); } .pass { background:var(--good-tint); color:var(--good); }
+.totals { display:flex; gap:28px; flex-wrap:wrap; margin:18px 0 28px; font:12px var(--mono); color:var(--muted); }
+.totals strong { display:block; font-size:20px; color:var(--fg); }
+table { width:100%; border-collapse:collapse; margin-bottom:32px; font-size:14px; }
+th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--edge); vertical-align:top; } th { color:var(--muted); font-weight:500; }
+code { font-family:var(--mono); font-size:.92em; }
+.card { background:var(--panel); border:1px solid var(--edge); border-radius:14px; padding:20px 22px; margin-bottom:18px; }
+.card h2 { font-size:17px; margin:0 0 4px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.tag { font:12px var(--mono); color:var(--muted); border:1px solid var(--edge); border-radius:6px; padding:1px 7px; }
+.problem { margin:10px 0 16px; }
+.pair { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
+.pair > div { border-radius:10px; padding:12px 14px; font-size:14px; }
+.was { background:var(--good-tint); } .now { background:var(--bad-tint); }
+.label { display:block; font:11px var(--mono); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:4px; }
+ol.docs { margin:6px 0 0; padding-left:20px; font-size:14px; color:var(--muted); } ol.docs li { margin:4px 0; }
+@media (max-width:640px) { .pair { grid-template-columns:1fr; } }
+</style></head><body><main>
+<h1>Kensa demo: a handbook bot with 3 planted bugs</h1>
+<p class='sub'>A small handbook bot with three planted bugs: it answers vacation questions from memory (24 days) instead of the documents (30), it only reads the first 3 documents, and one run in three it adds a sentence the documents don't support. Every input ran 3 times. Card 5 shows the cut-off: shrinking can't remove the 3 documents in front of the parking one, because the bot only fails while that document is 4th. This page is Kensa's real output (<code>python examples/toy/demo.py</code>). <a href='https://github.com/nancy6547/kensa'>Code on GitHub</a> · <a href='https://nancy6547.github.io'>Nancy Singh</a></p>
+<span class="status fail">FAIL · 6 violation(s)</span>
+<div class='totals'><div><strong>3</strong>cases</div><div><strong>26</strong>checks</div><div><strong>237</strong>app calls</div><div><strong>6</strong>violations</div></div>
+<table><tr><th>Invariant</th><th>Violations</th><th>What it means</th></tr>
+<tr><td><code>correct</code></td><td>2</td><td>The expected answer is in the documents, but the app didn&#x27;t give it.</td></tr>
+<tr><td><code>follows_update</code></td><td>2</td><td>The document was edited, and the app kept the old value.</td></tr>
+<tr><td><code>refuses_when_missing</code></td><td>1</td><td>The document with the answer was removed, and the app still answered.</td></tr>
+<tr><td><code>grounded</code></td><td>1</td><td>The answer says things the retrieved context doesn&#x27;t support.</td></tr>
+</table>
+<section class='card'><h2>1. <code>correct</code></h2>
+<p class='problem'>expected &#x27;30&#x27; in the answer</p>
+<div class='pair'><div class='was'><span class='label'>Question</span>How many days of paid vacation do employees get per year?<br><b>Expected:</b> 30</div><div class='now'><span class='label'>Answer</span>Employees get 24 days of paid vacation per year.</div></div>
+<span class='label'>Still fails with only these documents (1 of 5, after shrinking)</span><ol class='docs'><li>Employees get 30 days of paid vacation per year, plus public holidays.</li></ol></section>
+<section class='card'><h2>2. <code>refuses_when_missing</code><span class='tag'>evidence removed</span></h2>
+<p class='problem'>the evidence was removed, but the app answered instead of saying it doesn&#x27;t know</p>
+<div class='pair'><div class='was'><span class='label'>Original</span><b>Q:</b> How many days of paid vacation do employees get per year?<br><b>A:</b> Employees get 24 days of paid vacation per year.</div><div class='now'><span class='label'>After the change</span><b>Q:</b> How many days of paid vacation do employees get per year?<br><b>A:</b> Employees get 24 days of paid vacation per year.</div></div>
+<span class='label'>Still fails with only these documents (2 of 5, after shrinking)</span><ol class='docs'><li>The office is open from 9 am to 6 pm on weekdays.</li><li>Employees get 30 days of paid vacation per year, plus public holidays.</li></ol></section>
+<section class='card'><h2>3. <code>follows_update</code><span class='tag'>fact changed: 30 -&gt; 63</span></h2>
+<p class='problem'>the document now says &#x27;63&#x27;; the answer doesn&#x27;t</p>
+<div class='pair'><div class='was'><span class='label'>Original</span><b>Q:</b> How many days of paid vacation do employees get per year?<br><b>A:</b> Employees get 24 days of paid vacation per year.</div><div class='now'><span class='label'>After the change</span><b>Q:</b> How many days of paid vacation do employees get per year?<br><b>A:</b> Employees get 24 days of paid vacation per year.</div></div>
+<span class='label'>Still fails with only these documents (1 of 5, after shrinking)</span><ol class='docs'><li>Employees get 30 days of paid vacation per year, plus public holidays.</li></ol></section>
+<section class='card'><h2>4. <code>grounded</code><span class='tag'>flaky: fails 2/3 runs</span></h2>
+<p class='problem'>1 sentence(s) not supported by the context, e.g. &#x27;This policy was updated by the board in 2019.&#x27; (unsupported, support 0.00)</p>
+<div class='pair'><div class='was'><span class='label'>Question</span>How often are laptops replaced by the IT team?<br><b>Expected:</b> 3</div><div class='now'><span class='label'>Answer</span>Laptops are replaced every 3 years by the IT team. This policy was updated by the board in 2019.</div></div>
+<span class='label'>Still fails with only these documents (1 of 5, after shrinking)</span><ol class='docs'><li>Laptops are replaced every 3 years by the IT team.</li></ol></section>
+<section class='card'><h2>5. <code>correct</code></h2>
+<p class='problem'>refused, but the answer (120) is in the documents</p>
+<div class='pair'><div class='was'><span class='label'>Question</span>How many spaces does the parking garage have for staff?<br><b>Expected:</b> 120</div><div class='now'><span class='label'>Answer</span>I don&#x27;t know based on the handbook.</div></div>
+<span class='label'>Still fails with only these documents (4 of 5, after shrinking)</span><ol class='docs'><li>The office is open from 9 am to 6 pm on weekdays.</li><li>Employees get 30 days of paid vacation per year, plus public holidays.</li><li>Laptops are replaced every 3 years by the IT team.</li><li>The parking garage has 120 spaces for staff.</li></ol></section>
+<section class='card'><h2>6. <code>follows_update</code><span class='tag'>fact changed: 120 -&gt; 243</span></h2>
+<p class='problem'>the document now says &#x27;243&#x27;, but the app refused</p>
+<div class='pair'><div class='was'><span class='label'>Original</span><b>Q:</b> How many spaces does the parking garage have for staff?<br><b>A:</b> I don&#x27;t know based on the handbook.</div><div class='now'><span class='label'>After the change</span><b>Q:</b> How many spaces does the parking garage have for staff?<br><b>A:</b> I don&#x27;t know based on the handbook.</div></div>
+<span class='label'>Still fails with only these documents (4 of 5, after shrinking)</span><ol class='docs'><li>The office is open from 9 am to 6 pm on weekdays.</li><li>Employees get 30 days of paid vacation per year, plus public holidays.</li><li>Laptops are replaced every 3 years by the IT team.</li><li>The parking garage has 120 spaces for staff.</li></ol></section>
+</main></body></html>
