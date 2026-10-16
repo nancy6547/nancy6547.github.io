@@ -172,7 +172,10 @@ h2 small { display: block; font: 400 12.5px var(--jp); letter-spacing: .4em; col
 .insight .txt p { color: var(--muted); }
 .insight .txt b { color: var(--fg); }
 .term { min-width: 0; overflow: hidden; display: flex; flex-direction: column; }
+.preview { display: block; margin: 16px 0 4px; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; border: 1px solid var(--edge); background: #000; }
+.preview video { display: block; width: 100%; height: 100%; object-fit: cover; }
 .term pre { margin: 0; padding: 18px 20px; overflow-x: auto; font: 400 13.5px/1.75 var(--mono); color: #d6d6d6; flex: 1; }
+@media (max-width: 560px) { .term pre { padding: 14px 14px; font-size: 11.5px; white-space: pre-wrap; overflow-wrap: anywhere; } }
 .term .c { color: #6e6e6e; } .term .k { color: #ffffff; font-weight: 600; } .term .s { color: #bdbdbd; } .term .x { color: #050505; background: #fff; padding: 0 3px; }
 
 /* ---------- about ---------- */
@@ -310,6 +313,7 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
               <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12M6 21h12M7 3c0 5 10 5 10 9s-10 4-10 9M17 3c0 5-10 5-10 9"/></svg></div>
               <div><h3>Zeitaku</h3><div class="kind">TypeScript · testing</div></div>
             </div>
+            <a class="preview" href="demos/zeitaku/" aria-label="Open the Zeitaku demo"><video poster="demos/zeitaku-preview.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Screen recording: the Zeitaku playground replacing sleeps in a checkout test"><source src="demos/zeitaku-preview.webm" type="video/webm"><source src="demos/zeitaku-preview.mp4" type="video/mp4"></video></a>
             <p>A CLI that finds <code>waitForTimeout</code> sleeps in Playwright tests and replaces them with a wait that checks when the network is actually done (using the Chrome DevTools Protocol). I parse the test files with the TypeScript compiler so it doesn't touch comments or strings.</p>
             <div class="stats">
               <div class="stat"><div class="n fail">100%</div><div class="l">fixed sleeps failed on Slow 3G</div></div>
@@ -321,7 +325,7 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
             <div class="links">
               <a class="btn lead" href="demos/zeitaku/">Live playground ↗</a>
               <a class="btn" href="https://github.com/nancy6547/zeitaku" target="_blank" rel="noopener">Code ↗</a>
-              <a class="btn" href="https://github.com/documenso/documenso/issues/3445" target="_blank" rel="noopener">Documenso issue ↗</a>
+              <a class="btn" href="https://github.com/documenso/documenso/issues/3445" target="_blank" rel="noopener">Documenso #3445 ↗</a>
             </div>
           </div>
         </article>
@@ -334,6 +338,7 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
               <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M4 12h16M4 18h7"/><path d="M17 3l3 3-3 3"/></svg></div>
               <div><h3>Junban</h3><div class="kind">TypeScript · testing</div></div>
             </div>
+            <a class="preview" href="demos/junban/" aria-label="Open the Junban demo"><video poster="demos/junban-preview.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Screen recording: the Junban report showing the response order that breaks a test"><source src="demos/junban-preview.webm" type="video/webm"><source src="demos/junban-preview.mp4" type="video/mp4"></video></a>
             <p>Finds the exact order of API responses that makes a flaky Playwright test fail. It holds each response in the browser and lets them through in different orders, then shrinks the failure down to one rule like "fails when /api/cart arrives before /api/user" and writes a test that fails every time.</p>
             <div class="stats">
               <div class="stat"><div class="n chrome-text">6/6</div><div class="l">rare races caught by run 5</div></div>
@@ -504,7 +509,8 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
         <div class="titlebar"><span>zsh — zeitaku</span><svg fill="#fff" aria-hidden="true"><use href="#sigil"/></svg></div>
 <pre aria-label="Example of an intentional sleep"><span class="c">// documenso: we must NOT navigate away</span>
 <span class="k">await</span> page.waitForTimeout(<span class="s">1000</span>);
-<span class="k">await</span> expect(page).<span class="x">not</span>.toHaveURL(<span class="s">/\/admin\/users\/\d+$/</span>);
+<span class="k">await</span> expect(page).<span class="x">not</span>
+  .toHaveURL(<span class="s">/\/admin\/users\/\d+$/</span>);
 
 <span class="c">$ zeitaku scan ./tests</span>
 Total waitForTimeout:   <span class="k">240</span>
@@ -573,7 +579,7 @@ Total waitForTimeout:   <span class="k">240</span>
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------- ticker ---------- */
-  const facts = ["240 hard-coded sleeps found in 7 open-source repos", "slow 3G: fixed sleeps failed 100% of runs", "zeitaku: 0% failures", "44 sleeps left alone on purpose", "documenso issue #3445", "10 unit tests · CI green"];
+  const facts = ["240 hard-coded sleeps found in 7 open-source repos", "slow 3G: fixed sleeps failed 100% of runs", "zeitaku: 0% failures", "44 sleeps left alone on purpose", "Documenso #3445 issue", "10 unit tests · CI green"];
   document.getElementById("track").innerHTML = facts.concat(facts).map((f) => `<span><svg fill="#fff" aria-hidden="true"><use href="#sigil"/></svg>${f}</span>`).join("");
 
   /* ---------- dithered halftone sky with sigils ---------- */
@@ -908,5 +914,6 @@ Total waitForTimeout:   <span class="k">240</span>
   if (reduce) { nextBurst = Infinity; lastActivity = performance.now() - 1000; frame(performance.now()); } else requestAnimationFrame(frame);
 })();
 </script>
+<script>if (matchMedia("(prefers-reduced-motion: reduce)").matches) document.querySelectorAll(".preview video").forEach(v => { v.removeAttribute("autoplay"); v.pause(); });</script>
 </body>
 </html>
