@@ -350,7 +350,6 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
             <div class="links">
               <a class="btn lead" href="demos/junban/">Live report ↗</a>
               <a class="btn" href="https://github.com/nancy6547/junban" target="_blank" rel="noopener">Code ↗</a>
-              <a class="btn" href="https://github.com/browserbase/stagehand/pull/3175" target="_blank" rel="noopener">Stagehand PR ↗</a>
             </div>
           </div>
         </article>
@@ -436,7 +435,7 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
     <div class="wrap">
       <div class="sec-head">
         <h2 class="panel">Open source</h2>
-        <p class="panel">Fixes I sent to tools I use. Five merged into Google projects so far.</p>
+        <p class="panel">Fixes I sent to tools I use: five merged into Google projects, and a bug I found in Microsoft's Playwright that their team fixed.</p>
       </div>
       <div class="oss">
         <a class="pr panel" href="https://github.com/puppeteer/puppeteer/pull/15587" target="_blank" rel="noopener">
@@ -464,30 +463,10 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
           <b>Redirect chains list only earlier hops</b>
           <span class="what">Puppeteer shares one redirect array across hops, so early hops listed themselves and later ones. Each hop now shows only what came before it.</span>
         </a>
-        <a class="pr panel" href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3145" target="_blank" rel="noopener">
-          <span class="repo">Google · chrome-devtools-mcp #3145 <span class="state">PR open</span></span>
-          <b>Clearing location emulation no longer pins the page to 0,0</b>
-          <span class="what">Every emulate call moved the page to latitude 0, longitude 0. It now clears the override over CDP, with a real-browser test.</span>
-        </a>
-        <a class="pr panel" href="https://github.com/browserbase/stagehand/pull/3175" target="_blank" rel="noopener">
-          <span class="repo">Browserbase · stagehand #3175 <span class="state">PR open</span></span>
-          <b>Fix to Stagehand's network-idle wait</b>
-          <span class="what">Found while building Zeitaku, which solves the same "is the page done loading?" problem.</span>
-        </a>
-        <a class="pr panel" href="https://github.com/browserbase/stagehand/pull/3194" target="_blank" rel="noopener">
-          <span class="repo">Browserbase · stagehand #3194 <span class="state">PR open</span></span>
-          <b>Stagehand starts on Deno</b>
-          <span class="what">Uploading the browser extension crashed on Deno. It now uploads a File instead of a Node stream; reproduced and verified in both Deno and Node.</span>
-        </a>
-        <a class="pr panel" href="https://github.com/promptfoo/promptfoo/pull/11780" target="_blank" rel="noopener">
-          <span class="repo">promptfoo #11780 <span class="state">PR open</span></span>
-          <b>Perplexity tests from a CSV could never pass</b>
-          <span class="what">Spreadsheet tests got a default threshold that perplexity can't reach, so every output failed. Found by reading the code; issue #11779.</span>
-        </a>
-        <a class="pr panel" href="https://github.com/confident-ai/deepeval/pull/3470" target="_blank" rel="noopener">
-          <span class="repo">DeepEval #3470 <span class="state">PR open</span></span>
-          <b>Loading a dataset DeepEval saved itself crashed</b>
-          <span class="what">save_as("json") writes null for test cases without tools, and the JSON loader crashed on it. Found by reading the code; issue #3469.</span>
+        <a class="pr panel" href="https://github.com/microsoft/playwright/issues/43459" target="_blank" rel="noopener">
+          <span class="repo">Microsoft · playwright #43459 <span class="state" style="background:#fff;color:#050505;border-color:#fff">Fixed</span></span>
+          <b>Codegen wrote tests that crash on ${ in the page</b>
+          <span class="what">Multiline aria snapshots escaped ${ twice, so the generated test threw a ReferenceError. I reported it with the root cause, and the Playwright team fixed it in #43472.</span>
         </a>
         <a class="pr panel" href="https://github.com/documenso/documenso/issues/3445" target="_blank" rel="noopener">
           <span class="repo">Documenso #3445 <span class="state">issue</span></span>
@@ -542,7 +521,7 @@ Total waitForTimeout:   <span class="k">240</span>
       <div class="about">
         <div class="card panel"><div class="k">Education</div><div class="v">B.E. Computer Science <span>· SLIET Punjab · class of 2026 · available full-time now</span></div></div>
         <div class="card panel"><div class="k">Research</div><div class="v">Built an ML research project for IIT Jammu</div></div>
-        <div class="card panel"><div class="k">Open source</div><div class="v"><a href="#oss">Puppeteer, Chrome DevTools MCP, Stagehand, promptfoo, DeepEval</a> <span>· 5 merged in Google projects, more open</span></div></div>
+        <div class="card panel"><div class="k">Open source</div><div class="v"><a href="#oss">Puppeteer, Chrome DevTools MCP, Playwright</a> <span>· 5 merged in Google projects, 1 bug fixed in Playwright</span></div></div>
         <div class="card panel"><div class="k">Languages</div><div class="v">TypeScript, Python, Kotlin</div></div>
         <div class="card panel"><div class="k">Tools</div><div class="v">Playwright, CDP, PyTorch, Hugging Face, FAISS, LangChain</div></div>
         <div class="card panel"><div class="k">Based in</div><div class="v">Delhi, India <span>· open to remote and relocation</span></div></div>
