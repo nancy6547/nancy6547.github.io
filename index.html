@@ -463,11 +463,12 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
           <b>Redirect chains list only earlier hops</b>
           <span class="what">Puppeteer shares one redirect array across hops, so early hops listed themselves and later ones. Each hop now shows only what came before it.</span>
         </a>
-        <a class="pr panel" href="https://github.com/microsoft/playwright/issues/43459" target="_blank" rel="noopener">
-          <span class="repo">Microsoft · playwright #43459 <span class="state" style="background:#fff;color:#050505;border-color:#fff">Fixed</span></span>
+        <div class="pr panel">
+          <span class="repo">Microsoft · playwright <span class="state" style="background:#fff;color:#050505;border-color:#fff">Bug found · fixed</span></span>
           <b>Codegen wrote tests that crash on ${ in the page</b>
-          <span class="what">Multiline aria snapshots escaped ${ twice, so the generated test threw a ReferenceError. I reported it with the root cause, and the Playwright team fixed it in #43472.</span>
-        </a>
+          <span class="what">Multiline aria snapshots escaped ${ twice, so the generated test threw a ReferenceError. I reported it with the root cause, and the Playwright team fixed it.</span>
+          <span class="what"><a href="https://github.com/microsoft/playwright/issues/43459" target="_blank" rel="noopener" style="color:var(--fg)">My bug report #43459 ↗</a> · <a href="https://github.com/microsoft/playwright/pull/43472" target="_blank" rel="noopener" style="color:var(--fg)">Their fix #43472 ↗</a></span>
+        </div>
         <a class="pr panel" href="https://github.com/documenso/documenso/issues/3445" target="_blank" rel="noopener">
           <span class="repo">Documenso #3445 <span class="state">issue</span></span>
           <b>Redundant sleeps in the E2E suite</b>
