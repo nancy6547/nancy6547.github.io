@@ -435,7 +435,7 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
     <div class="wrap">
       <div class="sec-head">
         <h2 class="panel">Open source</h2>
-        <p class="panel">Fixes I sent to tools I use: seven merged into Google projects, one into Hugging Face, and a bug I found in Microsoft's Playwright that their team fixed.</p>
+        <p class="panel">Fixes I sent to tools I use: seven merged into Google projects, one into Hugging Face, and bugs I found in Microsoft's Playwright and Twenty's CRM that their teams fixed.</p>
       </div>
       <div class="oss">
         <a class="pr panel" href="https://github.com/puppeteer/puppeteer/pull/15587" target="_blank" rel="noopener">
@@ -483,6 +483,12 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
           <b>Codegen wrote tests that crash on ${ in the page</b>
           <span class="what">Multiline aria snapshots escaped ${ twice, so the generated test threw a ReferenceError. I reported it with the root cause, and the Playwright team fixed it.</span>
           <span class="what"><a href="https://github.com/microsoft/playwright/issues/43459" target="_blank" rel="noopener" style="color:var(--fg)">My bug report #43459 ↗</a> · <a href="https://github.com/microsoft/playwright/pull/43472" target="_blank" rel="noopener" style="color:var(--fg)">Their fix #43472 ↗</a></span>
+        </div>
+        <div class="pr panel">
+          <span class="repo">Twenty (YC) · CRM <span class="state" style="background:#fff;color:#050505;border-color:#fff">Bug found · fixed</span></span>
+          <b>Links field silently changed saved URLs</b>
+          <span class="what">URL normalization stripped a trailing slash from query values and hash fragments, so https://example.com/login?redirect=/ was saved without its slash. I reported it with the root cause, and Twenty's team fixed it.</span>
+          <span class="what"><a href="https://github.com/twentyhq/twenty/issues/28342" target="_blank" rel="noopener" style="color:var(--fg)">My bug report #28342 ↗</a> · <a href="https://github.com/twentyhq/twenty/pull/28421" target="_blank" rel="noopener" style="color:var(--fg)">Their fix #28421 ↗</a></span>
         </div>
         <a class="pr panel" href="https://github.com/documenso/documenso/issues/3445" target="_blank" rel="noopener">
           <span class="repo">Documenso #3445 <span class="state">issue</span></span>
