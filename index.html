@@ -244,6 +244,12 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
 .g-sw[aria-pressed="true"] { border-color: #fff; box-shadow: 0 0 0 2px #050505 inset; }
 .g-rev { background: none; color: #fff; border: 1px solid rgba(255,255,255,.4); border-radius: 999px; padding: 6px 14px; font: 600 13px var(--mono); cursor: pointer; letter-spacing: .06em; }
 .g-rev:active, .g-rev.on { background: #fff; color: #050505; }
+@media (max-width: 560px) { #garageBtn .lbl { display: none; } #garageBtn { padding: 7px 10px; } }
+.g-player { position: absolute; left: 24px; bottom: 28px; width: 240px; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,.18); background: #000; }
+.g-player[hidden] { display: none; }
+.g-player iframe { width: 100%; height: 100%; border: 0; display: block; }
+#garageMusic[aria-pressed="true"] { background: #fff; color: #050505; }
+@media (max-width: 720px) { .g-player { left: 50%; transform: translateX(-50%); bottom: 84px; width: 200px; } }
 .g-speed { font: 600 13px var(--mono); min-width: 64px; text-align: right; font-variant-numeric: tabular-nums; color: #cfcfcf; }
 @media (max-width: 520px) { .g-top { padding: 16px; } .g-bar { bottom: 18px; gap: 7px; } .g-speed { min-width: 52px; } }
 </style>
@@ -266,7 +272,8 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
         <a href="#work">work</a><a href="#oss">open source</a><a href="#insight">insight</a><a href="#writing">writing</a><a href="#about">about</a><a href="#contact">contact</a>
       </nav>
       <span class="bar-btns"><button class="snd" id="sound" type="button" aria-pressed="false"><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span id="sndLabel">sound off</span></button>
-      <button class="snd" id="musicBtn" type="button" aria-expanded="false" aria-controls="musicPanel"><span aria-hidden="true">&#9834;</span><span>music</span></button></span>
+      <button class="snd" id="musicBtn" type="button" aria-expanded="false" aria-controls="musicPanel"><span aria-hidden="true">&#9834;</span><span>music</span></button>
+      <button class="snd" id="garageBtn" type="button" aria-label="Open the 3D car garage"><span aria-hidden="true">🏎️</span><span class="lbl">garage</span></button></span>
     </div>
   </div>
 </header>
@@ -604,11 +611,12 @@ Total waitForTimeout:   <span class="k">240</span>
   </section>
 </main>
 
-<footer><div class="wrap"><span>nancy singh · 2026 · thank you for visiting</span><span>made by me, with a lot of googling · <button class="garage-btn" id="garageBtn" aria-label="Open the garage easter egg">🏎️ garage</button></span></div></footer>
+<footer><div class="wrap"><span>nancy singh · 2026 · thank you for visiting</span><span>made by me, with a lot of googling</span></div></footer>
 <div id="garage" role="dialog" aria-modal="true" aria-label="3D car garage">
   <canvas id="garageCv"></canvas>
-  <div class="g-top"><div><p class="g-title">the garage</p><div class="g-sub">I love cars, so I built one in Three.js · drag to spin · hold rev</div></div><button class="g-close" id="garageClose">close ✕</button></div>
-  <div class="g-bar"><button class="g-sw" data-c="chrome" aria-label="Chrome paint" aria-pressed="true" style="background:linear-gradient(135deg,#fff,#777 55%,#222)"></button><button class="g-sw" data-c="blue" aria-label="Deep blue paint" aria-pressed="false" style="background:#123a8c"></button><button class="g-sw" data-c="red" aria-label="Red paint" aria-pressed="false" style="background:#b3121b"></button><button class="g-sw" data-c="black" aria-label="Black paint" aria-pressed="false" style="background:#111;border-color:#444"></button><button class="g-rev" id="garageRev">REV</button><span class="g-speed" id="garageSpeed">0 km/h</span></div>
+  <div class="g-player" id="garagePlayer" hidden></div>
+  <div class="g-top"><div><p class="g-title">the garage</p><div class="g-sub">I love cars, so I built one in Three.js · drag to spin · hold rev · hit ♪ for the soundtrack</div></div><button class="g-close" id="garageClose">close ✕</button></div>
+  <div class="g-bar"><button class="g-sw" data-c="chrome" aria-label="Chrome paint" aria-pressed="true" style="background:linear-gradient(135deg,#fff,#777 55%,#222)"></button><button class="g-sw" data-c="blue" aria-label="Deep blue paint" aria-pressed="false" style="background:#123a8c"></button><button class="g-sw" data-c="red" aria-label="Red paint" aria-pressed="false" style="background:#b3121b"></button><button class="g-sw" data-c="black" aria-label="Black paint" aria-pressed="false" style="background:#111;border-color:#444"></button><button class="g-rev" id="garageRev">REV</button><button class="g-rev" id="garageMusic" aria-pressed="false">♪ TOKYO DRIFT</button><span class="g-speed" id="garageSpeed">0 km/h</span></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -1101,8 +1109,20 @@ Total waitForTimeout:   <span class="k">240</span>
   }
   function close() {
     dlg.classList.remove("open"); document.body.style.overflow = ""; running = false; cancelAnimationFrame(raf);
-    revving = false; revBtn.classList.remove("on"); if (lastFocus) lastFocus.focus();
+    revving = false; revBtn.classList.remove("on"); stopMusic(); if (lastFocus) lastFocus.focus();
   }
+  const musicBtn = document.getElementById("garageMusic"), player = document.getElementById("garagePlayer");
+  const TOKYO_DRIFT = "pS5d77DQHOI"; // Teriyaki Boyz - Tokyo Drift (official upload on YouTube)
+  function stopMusic() { player.innerHTML = ""; player.hidden = true; musicBtn.setAttribute("aria-pressed", "false"); }
+  function playMusic() {
+    const mp = document.getElementById("musicPanel"), mc = document.getElementById("musicClose");
+    if (mp && mc && !mp.hidden) mc.click();
+    const f = document.createElement("iframe");
+    f.src = "https://www.youtube-nocookie.com/embed/" + TOKYO_DRIFT + "?autoplay=1&rel=0";
+    f.title = "Tokyo Drift"; f.allow = "autoplay; encrypted-media";
+    player.innerHTML = ""; player.appendChild(f); player.hidden = false; musicBtn.setAttribute("aria-pressed", "true");
+  }
+  musicBtn.addEventListener("click", () => musicBtn.getAttribute("aria-pressed") === "true" ? stopMusic() : playMusic());
   openBtn.addEventListener("click", open);
   closeBtn.addEventListener("click", close);
   addEventListener("keydown", e => { if (e.key === "Escape" && dlg.classList.contains("open")) close(); });
