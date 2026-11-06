@@ -463,7 +463,7 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
     <div class="wrap">
       <div class="sec-head">
         <h2 class="panel">Open source</h2>
-        <p class="panel">Fixes I sent to tools I use: eight merged into Google projects, one into Hugging Face, one into Confident AI's DeepEval, and bugs I found in Microsoft's Playwright, Twenty's CRM and Documenso that their teams fixed. My Chrome DevTools MCP console fix was also selected for the <a href="https://hub.xerj.org/contributors/nancy6547" target="_blank" rel="noopener"><b>XERJ Corpus Hub</b></a>, a reference library AI coding agents search before writing code.</p>
+        <p class="panel">Fixes I sent to tools I use: eight merged into Google projects, one into Hugging Face, one into Confident AI's DeepEval, a co-authored example in Instructor, and bugs I found in Microsoft's Playwright, Twenty's CRM and Documenso that their teams fixed. My Chrome DevTools MCP console fix was also selected for the <a href="https://hub.xerj.org/contributors/nancy6547" target="_blank" rel="noopener"><b>XERJ Corpus Hub</b></a>, a reference library AI coding agents search before writing code.</p>
       </div>
       <div class="oss">
         <a class="pr panel" href="https://github.com/puppeteer/puppeteer/pull/15587" target="_blank" rel="noopener">
@@ -516,6 +516,12 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
           <b>Saved eval datasets load back without crashing</b>
           <span class="what">DeepEval's own save_as("json") writes "tools_called": null for test cases without tools, and loading that file back crashed with a TypeError. I reported it and sent the fix, with a round-trip test; null now counts as an empty list, like the CSV and JSONL loaders.</span>
           <span class="what"><a href="https://github.com/confident-ai/deepeval/issues/3469" target="_blank" rel="noopener" style="color:var(--fg)">My bug report #3469 ↗</a> · <a href="https://github.com/confident-ai/deepeval/pull/3470" target="_blank" rel="noopener" style="color:var(--fg)">My fix #3470 ↗</a></span>
+        </div>
+        <div class="pr panel">
+          <span class="repo">567 Labs · instructor <span class="state" style="background:#fff;color:#050505;border-color:#fff">Co-authored · in main</span></span>
+          <b>Claim-decomposition example for fact-checking pipelines</b>
+          <span class="what">I proposed an example that breaks an answer into individual claims so each one can be checked against its source. The maintainer folded it into a larger provenance example on main and credited me as co-author.</span>
+          <span class="what"><a href="https://github.com/567-labs/instructor/pull/2531" target="_blank" rel="noopener" style="color:var(--fg)">My PR #2531 ↗</a> · <a href="https://github.com/567-labs/instructor/commit/d1cfa23b59049a106c6cc1963d1dc129795e8e57" target="_blank" rel="noopener" style="color:var(--fg)">Commit on main ↗</a></span>
         </div>
         <div class="pr panel">
           <span class="repo">Microsoft · playwright <span class="state" style="background:#fff;color:#050505;border-color:#fff">Bug found · fixed</span></span>
@@ -582,7 +588,7 @@ Total waitForTimeout:   <span class="k">240</span>
       <div class="sec-head"><h2 class="panel">About</h2></div>
       <div class="about">
         <div class="card panel"><div class="k">Education</div><div class="v">B.E. Computer Science <span>· SLIET Punjab · class of 2026 · available full-time now</span></div></div>
-        <div class="card panel"><div class="k">Open source</div><div class="v"><a href="#oss">Puppeteer, Chrome DevTools MCP, sentence-transformers, DeepEval, Playwright</a> <span>· 10 merged (8 Google, 1 Hugging Face, 1 Confident AI), bugs fixed in Playwright, Twenty and Documenso, 1 fix selected for the <a href="https://hub.xerj.org/contributors/nancy6547" target="_blank" rel="noopener">XERJ Corpus Hub</a></span></div></div>
+        <div class="card panel"><div class="k">Open source</div><div class="v"><a href="#oss">Puppeteer, Chrome DevTools MCP, sentence-transformers, DeepEval, Instructor, Playwright</a> <span>· 10 merged (8 Google, 1 Hugging Face, 1 Confident AI), co-author on Instructor, bugs fixed in Playwright, Twenty and Documenso, 1 fix selected for the <a href="https://hub.xerj.org/contributors/nancy6547" target="_blank" rel="noopener">XERJ Corpus Hub</a></span></div></div>
         <div class="card panel"><div class="k">Languages</div><div class="v">TypeScript, Python, Kotlin</div></div>
         <div class="card panel"><div class="k">Tools</div><div class="v">Playwright, CDP, PyTorch, Hugging Face, FAISS, LangChain</div></div>
         <div class="card panel"><div class="k">Based in</div><div class="v">Delhi, India <span>· open to remote and relocation</span></div></div>
