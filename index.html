@@ -10,7 +10,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23050505'/%3E%3Cpath fill='%23f2f2f2' d='M50 8 C53 40 60 47 92 50 C60 53 53 60 50 92 C47 60 40 53 8 50 C40 47 47 40 50 8 Z'/%3E%3C/svg%3E">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Nancy Singh · testing tools and AI reliability">
-<meta property="og:description" content="I fix flaky tests and LLMs that make stuff up. Zeitaku, Junban, DocMind, HalluGuard.">
+<meta property="og:description" content="I fix flaky tests and LLMs that make stuff up. Zeitaku, Junban, Saisei, DocMind, HalluGuard.">
 <meta property="og:url" content="https://nancy6547.github.io/">
 <meta property="og:image" content="https://nancy6547.github.io/og.png">
 <meta property="og:image:width" content="1200">
@@ -329,7 +329,7 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
     <div class="wrap">
       <div class="sec-head">
         <h2 class="panel">Selected work</h2>
-        <p class="panel">Six projects, each with something you can open and try. Zeitaku and Junban are the two I'm most proud of.</p>
+        <p class="panel">Seven projects, each with something you can open and try. Zeitaku, Junban and Saisei are the ones I'm most proud of.</p>
       </div>
       <div class="work">
 
@@ -378,6 +378,29 @@ footer .wrap { padding-block: 22px; display: flex; justify-content: space-betwee
             <div class="links">
               <a class="btn lead" href="demos/junban/">Live report ↗</a>
               <a class="btn" href="https://github.com/nancy6547/junban" target="_blank" rel="noopener">Code ↗</a>
+            </div>
+          </div>
+        </article>
+
+
+        <article class="win panel chromed" data-tilt>
+          <div class="glare"></div>
+          <div class="titlebar"><span>~/saisei</span><svg fill="#fff" aria-hidden="true"><use href="#sigil"/></svg></div>
+          <div class="body">
+            <div class="top">
+              <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M10 9l5 3-5 3z"/></svg></div>
+              <div><h3>Saisei</h3><div class="kind">TypeScript · testing</div></div>
+            </div>
+            <p>Records a web app's API responses once and replays them on every test run, so a flaky Playwright test sees the same data each time. It can also replay responses in a chosen order to reproduce a race on purpose, and warns when the live API has drifted from the recording (a renamed or retyped field).</p>
+            <div class="stats">
+              <div class="stat"><div class="n fail">47/100</div><div class="l">passes live (flaky)</div></div>
+              <div class="stat"><div class="n chrome-text">100/100</div><div class="l">passes on replay</div></div>
+              <div class="stat"><div class="n chrome-text">100/100</div><div class="l">failing order reproduced</div></div>
+              <div class="stat"><div class="n chrome-text">11</div><div class="l">tests, incl. drift + CLI</div></div>
+            </div>
+            <div class="chips"><span>Playwright</span><span>Record / replay</span><span>Drift detection</span><span>CLI</span></div>
+            <div class="links">
+              <a class="btn lead" href="https://github.com/nancy6547/saisei" target="_blank" rel="noopener">Code ↗</a>
             </div>
           </div>
         </article>
